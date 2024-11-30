@@ -15,6 +15,7 @@ interface ThemedInputProps extends TextInputProps {
 	placeholder: string;
 	label?: string; // Optional label prop
 	onChangeText?: (text: string) => void; // Optional onChange handler
+	borderRadius: number;
 }
 
 export function ThemedInput({
@@ -22,6 +23,7 @@ export function ThemedInput({
 	darkColor,
 	placeholder,
 	label, // Optional label
+	borderRadius,
 	onChangeText, // Optional onChange handler
 	...otherProps
 }: ThemedInputProps) {
@@ -69,6 +71,7 @@ export function ThemedInput({
 					{
 						borderColor: isFocused ? Colors.primary.color : "#F6F6F6", // Primary color on focus
 						backgroundColor: isFocused ? "white" : "#F6F6F6",
+						borderRadius: borderRadius,
 					},
 				]}
 				onFocus={handleFocus}

@@ -1149,3 +1149,93 @@ export function SettingPrivacyIcon() {
 		</Svg>
 	);
 }
+
+export function ActivePatientIcon() {
+	return (
+		<Svg
+			width="40"
+			height="40"
+			viewBox="0 0 40 40"
+			fill="none"
+		>
+			<Rect
+				width="40"
+				height="40"
+				rx="20"
+				fill="white"
+			/>
+			<Path
+				d="M20 10C17.38 10 15.25 12.13 15.25 14.75C15.25 17.32 17.26 19.4 19.88 19.49C19.96 19.48 20.04 19.48 20.1 19.49C20.12 19.49 20.13 19.49 20.15 19.49C20.16 19.49 20.16 19.49 20.17 19.49C22.73 19.4 24.74 17.32 24.75 14.75C24.75 12.13 22.62 10 20 10Z"
+				fill="#3A8289"
+			/>
+			<Path
+				opacity="0.4"
+				d="M25.08 22.1599C22.29 20.2999 17.74 20.2999 14.93 22.1599C13.66 22.9999 12.96 24.1499 12.96 25.3799C12.96 26.6099 13.66 27.7499 14.92 28.5899C16.32 29.5299 18.16 29.9999 20 29.9999C21.84 29.9999 23.68 29.5299 25.08 28.5899C26.34 27.7399 27.04 26.5999 27.04 25.3599C27.03 24.1399 26.34 22.9899 25.08 22.1599Z"
+				fill="#3A8289"
+			/>
+			<Path
+				d="M19.3702 27.26C19.2102 27.26 19.0502 27.19 18.9302 27.08L17.6702 25.82C17.4302 25.58 17.4302 25.18 17.6702 24.94C17.9102 24.7 18.3102 24.7 18.5502 24.94L19.3702 25.76L21.4502 23.68C21.6902 23.44 22.0902 23.44 22.3302 23.68C22.5702 23.92 22.5702 24.32 22.3302 24.56L19.8102 27.08C19.6902 27.2 19.5302 27.26 19.3702 27.26Z"
+				fill="#3A8289"
+			/>
+		</Svg>
+	);
+}
+
+export function InfoIcon() {
+	return (
+		<Svg
+			width="24"
+			height="24"
+			viewBox="0 0 24 24"
+			fill="none"
+		>
+			<Path
+				fill-rule="evenodd"
+				clip-rule="evenodd"
+				d="M16.334 2.75H7.665C4.644 2.75 2.75 4.889 2.75 7.916V16.084C2.75 19.111 4.635 21.25 7.665 21.25H16.333C19.364 21.25 21.25 19.111 21.25 16.084V7.916C21.25 4.889 19.364 2.75 16.334 2.75Z"
+				stroke="#FF9F00"
+				stroke-width="1.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+			<Path
+				d="M11.9946 16V12"
+				stroke="#FF9F00"
+				stroke-width="1.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+			<Path
+				d="M11.9896 8.2041H11.9996"
+				stroke="#FF9F00"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+		</Svg>
+	);
+}
+
+export function SearchIcon() {
+	return (
+		<Svg
+			width="18"
+			height="18"
+			viewBox="0 0 18 18"
+			fill="none"
+		>
+			<Path
+				d="M8.25 14.25C11.5637 14.25 14.25 11.5637 14.25 8.25C14.25 4.93629 11.5637 2.25 8.25 2.25C4.93629 2.25 2.25 4.93629 2.25 8.25C2.25 11.5637 4.93629 14.25 8.25 14.25Z"
+				stroke="#BCBCBC"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+			<Path
+				d="M15.7498 15.75L12.4873 12.4875"
+				stroke="#BCBCBC"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+		</Svg>
+	);
+}

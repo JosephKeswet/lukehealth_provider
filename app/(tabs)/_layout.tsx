@@ -80,7 +80,7 @@ export default function TabLayout() {
 				options={{
 					title: "Patient",
 					tabBarIcon: ({ color, focused }) => <PatientBarIcon color={color} />,
-					headerTitle: "Prescription Details",
+					headerTitle: "Patients",
 					headerTitleStyle: {
 						fontSize: 16,
 						fontWeight: "400",
@@ -115,7 +115,7 @@ export default function TabLayout() {
 			<Tabs.Screen
 				name={routes.docs}
 				options={{
-					title: "Chat",
+					title: "Docs",
 					tabBarIcon: ({ color, focused }) => <DocsBarIcon color={color} />,
 				}}
 			/>
