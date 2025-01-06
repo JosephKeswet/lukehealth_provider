@@ -1,7 +1,7 @@
 import { ThemedButton } from "@/components/ThemedButton";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { View, StyleSheet, SafeAreaView, TextInput } from "react-native";
 import { useState } from "react";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
@@ -61,6 +61,7 @@ export default function CreateNoteScreen() {
 						title="Save Note"
 						onPress={() => {
 							console.log("Note saved:", note);
+							router.push("/(tabs)/notes");
 						}}
 						style={{
 							width: "45%",
