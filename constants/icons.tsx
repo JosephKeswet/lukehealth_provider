@@ -1239,3 +1239,29 @@ export function SearchIcon() {
 		</Svg>
 	);
 }
+
+export function ArrowLongIcon() {
+	return (
+		<Svg
+			width="17"
+			height="7"
+			viewBox="0 0 17 7"
+			fill="none"
+		>
+			<Path
+				d="M15 3.49957L1 3.49957"
+				stroke="#3A8289"
+				stroke-width="0.7"
+				stroke-linecap="square"
+				stroke-linejoin="round"
+			/>
+			<Path
+				d="M13.6855 1L16.1961 3.49979L13.6855 6"
+				stroke="#3A8289"
+				stroke-width="0.7"
+				stroke-linecap="square"
+				stroke-linejoin="round"
+			/>
+		</Svg>
+	);
+}

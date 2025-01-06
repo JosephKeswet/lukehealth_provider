@@ -17,6 +17,7 @@ import {
 	ArrowBackIcon,
 	EllipsisIcon,
 	LukeHealthLogo,
+	NotesIcon,
 	NotificationIcon,
 	ProfileIcon,
 } from "@/constants/icons";
@@ -106,17 +107,34 @@ export default function TabLayout() {
 				}}
 			/>
 			<Tabs.Screen
+				name={routes.notes}
+				options={{
+					title: "Notes",
+					tabBarIcon: ({ color, focused }) => <NotesIcon />,
+					headerTitle: "Notes",
+					headerTitleStyle: {
+						fontSize: 16,
+						fontWeight: "400",
+						color: "#282828",
+					},
+					headerShown: true,
+					headerLeft: () => (
+						<Pressable
+							onPress={() => router.back()}
+							style={{ flexDirection: "row", gap: 4, paddingLeft: 15 }}
+						>
+							<ArrowBackIcon />
+						</Pressable>
+					),
+
+					headerShadowVisible: false,
+				}}
+			/>
+			<Tabs.Screen
 				name={routes.chat}
 				options={{
 					title: "Chat",
 					tabBarIcon: ({ color, focused }) => <ChatBarIcon color={color} />,
-				}}
-			/>
-			<Tabs.Screen
-				name={routes.docs}
-				options={{
-					title: "Docs",
-					tabBarIcon: ({ color, focused }) => <DocsBarIcon color={color} />,
 				}}
 			/>
 		</Tabs>

@@ -29,39 +29,34 @@ export const SearchComponent = ({
 		<View style={styles.container}>
 			<ThemedInput
 				placeholder="Search for patients"
-				// label="Search"
 				value={searchQuery}
 				onChangeText={handleSearch}
 				style={{
 					borderColor: "#F4F6F8",
 				}}
 				borderRadius={24}
-				// lightColor={Colors.primary.lightGray}
-				// darkColor={Colors.primary.darkGray}
 			/>
-			{searchQuery !== "" && (
-				<FlatList
-					data={data.filter((item) =>
-						item.toLowerCase().includes(searchQuery.toLowerCase())
-					)}
-					keyExtractor={(item, index) => index.toString()}
-					renderItem={({ item }) => (
-						<View style={styles.resultItem}>
-							<View
-								style={{
-									width: 32,
-									height: 32,
-									borderRadius: 16,
-									backgroundColor: Colors.primary.color,
-									justifyContent: "center",
-									alignItems: "center",
-								}}
-							></View>
-							<ThemedText style={styles.resultText}>{item}</ThemedText>
-						</View>
-					)}
-				/>
-			)}
+			<FlatList
+				data={data.filter((item) =>
+					item.toLowerCase().includes(searchQuery.toLowerCase())
+				)}
+				keyExtractor={(item, index) => index.toString()}
+				renderItem={({ item }) => (
+					<View style={styles.resultItem}>
+						<View
+							style={{
+								width: 32,
+								height: 32,
+								borderRadius: 16,
+								backgroundColor: Colors.primary.color,
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+						></View>
+						<ThemedText style={styles.resultText}>{item}</ThemedText>
+					</View>
+				)}
+			/>
 		</View>
 	);
 };
