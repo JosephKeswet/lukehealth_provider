@@ -77,9 +77,9 @@ export default function TabLayout() {
 				}}
 			/>
 			<Tabs.Screen
-				name={routes.patient}
+				name={routes.patients}
 				options={{
-					title: "Patient",
+					title: "Patients",
 					tabBarIcon: ({ color, focused }) => <PatientBarIcon color={color} />,
 					headerTitle: "Patients",
 					headerTitleStyle: {
@@ -130,6 +130,7 @@ export default function TabLayout() {
 					headerShadowVisible: false,
 				}}
 			/>
+
 			<Tabs.Screen
 				name={routes.chat}
 				options={{

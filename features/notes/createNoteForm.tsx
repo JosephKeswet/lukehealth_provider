@@ -6,7 +6,8 @@ import { Image } from "expo-image";
 import { SelectList } from "react-native-dropdown-select-list";
 import { Colors } from "@/constants/Colors";
 import { ThemedButton } from "@/components/ThemedButton";
-import { AvatarIcon, PlusRoundedIcon } from "@/constants/icons";
+import { AvatarIcon, PlusRoundedIcon, XIcon } from "@/constants/icons";
+import { router } from "expo-router";
 
 export default function CreateNoteForm() {
 	const [selected, setSelected] = useState("OD (Once Daily)");
@@ -21,7 +22,7 @@ export default function CreateNoteForm() {
 		<View
 			style={{
 				backgroundColor: "white",
-				padding: 16,
+				paddingTop: 16,
 				borderRadius: 8,
 				marginBottom: 16,
 				borderColor: "#DADADA",
@@ -57,6 +58,7 @@ export default function CreateNoteForm() {
 				style={{
 					flexDirection: "column",
 					gap: 16,
+					paddingHorizontal: 20,
 				}}
 			>
 				<ThemedInput
@@ -108,9 +110,11 @@ export default function CreateNoteForm() {
 							height: 36,
 							backgroundColor: "#E7E7FF",
 							borderRadius: 32,
-							justifyContent: "center",
-							alignItems: "flex-start",
+							flexDirection: "row",
+							justifyContent: "flex-start",
+							alignItems: "center",
 							paddingHorizontal: 5,
+							gap: 5,
 						}}
 					>
 						<View
@@ -121,8 +125,66 @@ export default function CreateNoteForm() {
 								borderRadius: 100,
 							}}
 						/>
+						{/* <View
+							style={{
+								flexDirection: "row",
+								justifyContent: "space-between",
+								alignItems: "center",
+							}}
+						> */}
+						<ThemedText>James</ThemedText>
+						<XIcon />
+						{/* </View> */}
 					</View>
 				</View>
+			</View>
+			<View
+				style={{
+					backgroundColor: "#F8F8F8",
+					height: 76,
+					borderBottomRightRadius: 8,
+					borderBottomLeftRadius: 8,
+					flexDirection: "row",
+					justifyContent: "space-between",
+					alignItems: "center",
+					paddingHorizontal: 20,
+					paddingVertical: 12,
+					gap: 16,
+				}}
+			>
+				<ThemedButton
+					onPress={() => {}}
+					title="Cancel"
+					style={{
+						width: "45%",
+						height: 44,
+						backgroundColor: "white",
+						borderRadius: 32,
+						justifyContent: "center",
+						borderWidth: 1,
+						borderColor: "#E8E8E8",
+					}}
+					textStyle={{
+						fontSize: 16,
+						color: Colors.primary.black,
+					}}
+				/>
+				<ThemedButton
+					onPress={() => router.push("/create/1")}
+					title="Create note"
+					style={{
+						width: "45%",
+						height: 44,
+						backgroundColor: Colors.primary.color,
+						borderRadius: 32,
+						justifyContent: "center",
+						alignItems: "center",
+					}}
+					textStyle={{
+						fontSize: 16,
+						color: "white",
+					}}
+				/>
 			</View>
 		</View>
 	);

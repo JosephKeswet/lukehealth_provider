@@ -13,6 +13,7 @@ export default function CreateNote() {
 			<View
 				style={{
 					paddingHorizontal: 20,
+					paddingTop: 50,
 				}}
 			>
 				<CreateNoteForm />

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { View, StyleSheet, FlatList, Text } from "react-native";
+import { View, StyleSheet, FlatList, Text, Pressable } from "react-native";
 import { ThemedInput } from "./ThemedInput"; // Import your ThemedInput component
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "./ThemedText";
+import { MessageIcon, PhoneIcon } from "@/constants/icons";
+import { router } from "expo-router";
 
 interface SearchComponentProps {
 	data: string[]; // Array of items to search from
@@ -33,8 +35,8 @@ export const SearchComponent = ({
 				onChangeText={handleSearch}
 				style={{
 					borderColor: "#F4F6F8",
+					borderRadius: 24,
 				}}
-				borderRadius={24}
 			/>
 			<FlatList
 				data={data.filter((item) =>
@@ -42,19 +44,50 @@ export const SearchComponent = ({
 				)}
 				keyExtractor={(item, index) => index.toString()}
 				renderItem={({ item }) => (
-					<View style={styles.resultItem}>
+					<Pressable
+						onPress={() => router.push("/patient/2")}
+						style={styles.resultItem}
+					>
 						<View
 							style={{
-								width: 32,
-								height: 32,
-								borderRadius: 16,
-								backgroundColor: Colors.primary.color,
-								justifyContent: "center",
+								flexDirection: "row",
 								alignItems: "center",
+								gap: 10,
 							}}
-						></View>
-						<ThemedText style={styles.resultText}>{item}</ThemedText>
-					</View>
+						>
+							<View
+								style={{
+									width: 32,
+									height: 32,
+									borderRadius: 16,
+									backgroundColor: Colors.primary.color,
+									justifyContent: "center",
+									alignItems: "center",
+								}}
+							></View>
+							<View>
+								<ThemedText style={styles.resultText}>{item}</ThemedText>
+								<ThemedText
+									style={{
+										fontSize: 11,
+										color: "#808080",
+										fontWeight: "500",
+									}}
+								>
+									54,61kg
+								</ThemedText>
+							</View>
+						</View>
+						<View
+							style={{
+								flexDirection: "row",
+								gap: 10,
+							}}
+						>
+							<PhoneIcon />
+							<MessageIcon />
+						</View>
+					</Pressable>
 				)}
 			/>
 		</View>
@@ -71,11 +104,11 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: "#F6F6F6",
 		width: "100%",
-		height: 56,
+		height: 72,
 		marginVertical: 8,
 		flexDirection: "row",
-		gap: 12,
 		alignItems: "center",
+		justifyContent: "space-between",
 		borderRadius: 8,
 	},
 	resultText: {

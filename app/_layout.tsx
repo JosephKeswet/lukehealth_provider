@@ -95,6 +95,60 @@ export default function RootLayout() {
 						headerShadowVisible: false,
 					}}
 				/>
+				<Stack.Screen
+					name={routes.note_create}
+					options={{
+						title: "Notes",
+						headerStyle: {
+							backgroundColor: "white",
+						},
+						headerTitle: "Notes",
+						headerTitleStyle: {
+							fontSize: 16,
+							fontWeight: "400",
+							color: "#282828",
+						},
+						headerShown: true,
+
+						headerLeft: () => (
+							<Pressable
+								onPress={() => router.back()}
+								style={{ flexDirection: "row", gap: 4 }}
+							>
+								<ArrowBackIcon />
+							</Pressable>
+						),
+
+						headerShadowVisible: false,
+					}}
+				/>
+				<Stack.Screen
+					name={routes.patient}
+					options={{
+						title: "Patient",
+						headerStyle: {
+							backgroundColor: "white",
+						},
+						headerTitle: "Patient",
+						headerTitleStyle: {
+							fontSize: 16,
+							fontWeight: "400",
+							color: "#282828",
+						},
+						headerShown: true,
+
+						headerLeft: () => (
+							<Pressable
+								onPress={() => router.back()}
+								style={{ flexDirection: "row", gap: 4 }}
+							>
+								<ArrowBackIcon />
+							</Pressable>
+						),
+
+						headerShadowVisible: false,
+					}}
+				/>
 				<Stack.Screen name="+not-found" />
 			</Stack>
 			<StatusBar style="auto" />
