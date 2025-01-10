@@ -13,8 +13,8 @@ import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { Link, router } from "expo-router";
 import { ArrowLongIcon } from "@/constants/icons";
-import { FloatingActionButton } from "@/components/FloatingActionButton";
 import EmptyNoteState from "@/features/notes/emptyNoteState";
+import FloatingActionButton from "@/components/FloatingActionButton";
 
 export default function NoteScreen() {
 	const { width } = Dimensions.get("window");
@@ -98,7 +98,7 @@ export default function NoteScreen() {
 					)}
 				</View>
 			</ScrollView>
-			<FloatingActionButton onPress={() => {}} />
+			<FloatingActionButton />
 		</SafeAreaView>
 	);
 }

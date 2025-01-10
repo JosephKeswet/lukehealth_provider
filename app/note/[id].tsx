@@ -1,4 +1,4 @@
-import { FloatingActionButton } from "@/components/FloatingActionButton";
+import FloatingActionButton from "@/components/FloatingActionButton";
 import { ThemedButton } from "@/components/ThemedButton";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
@@ -77,7 +77,7 @@ export default function NoteScreen() {
 					/>
 				</View>
 			</View>
-			<FloatingActionButton onPress={() => {}} />
+			<FloatingActionButton />
 		</SafeAreaView>
 	);
 }

@@ -9,16 +9,25 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
+import * as Progress from "react-native-progress";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { routes } from "@/constants/routing";
 import { Pressable } from "react-native";
 import { ArrowBackIcon } from "@/constants/icons";
+import usePatientStore from "@/store";
+import { Colors } from "@/constants/Colors";
+import { ThemedText } from "@/components/ThemedText";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+	const patientProgress = usePatientStore((state) => state.patientProgress);
+
+	const setPatientProgress = usePatientStore(
+		(state) => state.setPatientProgress
+	);
 	const colorScheme = useColorScheme();
 	const [loaded] = useFonts({
 		SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -147,6 +156,35 @@ export default function RootLayout() {
 						),
 
 						headerShadowVisible: false,
+					}}
+				/>
+				<Stack.Screen
+					name={routes.add_patient}
+					options={{
+						headerTitle: "", // Hide default header title
+						// headerBackTitle: "Health Information",
+						headerShadowVisible: false,
+						headerBackTitleStyle: {
+							fontSize: 14,
+						},
+						headerTintColor: "#282828",
+						headerRight: () => (
+							<Progress.Bar
+								progress={patientProgress}
+								width={135}
+								height={2}
+								color={Colors.primary.color}
+							/>
+						),
+						headerLeft: ({ canGoBack }) => (
+							<Pressable
+								onPress={() => router.back()}
+								style={{ flexDirection: "row", gap: 4 }}
+							>
+								<ArrowBackIcon />
+								<ThemedText>New Patient</ThemedText>
+							</Pressable>
+						),
 					}}
 				/>
 				<Stack.Screen name="+not-found" />

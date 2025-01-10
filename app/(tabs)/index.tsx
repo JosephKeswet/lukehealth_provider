@@ -21,7 +21,7 @@ import {
 } from "@/constants/icons";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
-import { FloatingActionButton } from "@/components/FloatingActionButton";
+import FloatingActionButton from "@/components/FloatingActionButton";
 
 // Floating Action Button Component
 
@@ -131,7 +131,7 @@ export default function HomeScreen() {
 				</View>
 
 				{/* Bottom Sheet */}
-				<RBSheet
+				{/* <RBSheet
 					ref={bottomSheetRef}
 					height={300}
 					openDuration={250}
@@ -159,11 +159,11 @@ export default function HomeScreen() {
 							subText="Pick a time that’s convenient for you to get care."
 						/>
 					</View>
-				</RBSheet>
+				</RBSheet> */}
 			</ScrollView>
 
 			{/* Floating Action Button */}
-			<FloatingActionButton onPress={openBottomSheet} />
+			<FloatingActionButton />
 		</SafeAreaView>
 	);
 }
