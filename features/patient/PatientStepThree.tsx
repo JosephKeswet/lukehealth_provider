@@ -23,7 +23,7 @@ import { router } from "expo-router";
 import usePatientStore from "@/store";
 import CustomInputWithSuggesstion from "@/components/CustomInputWithSuggestion";
 
-export default function PatientStepTwo() {
+export default function PatientStepThree() {
 	const { height } = Dimensions.get("window");
 	const [selectedId, setSelectedId] = useState<string>("");
 	const [selected, setSelected] = useState("Nigeria");
@@ -56,7 +56,7 @@ export default function PatientStepTwo() {
 	};
 
 	const handlePress = () => {
-		setPatientProgress(0.6);
+		setPatientProgress(0.8); // Update progress to move to the next step
 		// router.push("");
 	};
 

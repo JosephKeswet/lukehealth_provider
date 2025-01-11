@@ -3,7 +3,8 @@ export const routes = {
 	home: "index",
 	patients: "patients",
 	patient: "patient/[id]",
-	chat: "chat",
+	chat: "chat/[id]",
+	chats: "chat",
 	notes: "notes",
 	note: "note/[id]", // dynamic route must be prefixed with the [id] parameter
 	create_note: "create-note",

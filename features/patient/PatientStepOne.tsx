@@ -1,11 +1,18 @@
-import { Dimensions, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import {
+	Dimensions,
+	SafeAreaView,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+} from "react-native";
 import React, { useState } from "react";
 import { ThemedButton } from "@/components/ThemedButton";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { router } from "expo-router";
-import { GenderCategory, PatientCategoryStatus } from "@/constants/enums";
+import { GenderCategory } from "@/constants/enums";
 import useHealthStore from "@/store";
 import { ThemedInput } from "@/components/ThemedInput";
 import { SelectList } from "react-native-dropdown-select-list";
@@ -28,22 +35,21 @@ export default function PatientStepOne() {
 		{ key: "6", value: "CC" },
 	];
 
-	// Handle the change of input value
 	const handleInputChange = (text: string) => {
 		setInputValue(text);
 	};
-	// Handle radio button change
+
 	const handleChangeCategory = (id: string) => {
 		setSelectedId(id);
 	};
 
 	const handlePress = () => {
-		setPatientProgress(1.0); // Update progress to move to the next step
+		setPatientProgress(0.4); // Update progress to move to the next step
 	};
-	// Map enum values to radio button options dynamically
+
 	const radioOptions = [
 		{
-			id: GenderCategory.Male, // Use enum values here
+			id: GenderCategory.Male,
 			label: GenderCategory.Male,
 		},
 		{
@@ -54,89 +60,118 @@ export default function PatientStepOne() {
 
 	return (
 		<SafeAreaView style={[styles.safeAreaView, { height }]}>
-			<View style={styles.container}>
-				<View style={{ flexDirection: "column", gap: 8 }}>
-					<ThemedText
-						style={{
-							paddingHorizontal: 20,
-							color: Colors.primary.black,
-							fontWeight: "400",
-						}}
-					>
-						Gender
-					</ThemedText>
-					<View style={styles.radioContainer}>
-						{radioOptions.map((option) => (
-							<View
-								style={styles.radioOption}
-								key={option.id}
-							>
-								<RadioButton
-									id={option.id}
-									containerStyle={styles.radioButtonContainer}
-									borderColor="#3A8289"
-									onPress={() => handleChangeCategory(option.id)}
-									selected={selectedId === option.id}
-									color={Colors.primary.color}
-								/>
-								<ThemedText style={styles.radioLabel}>
-									{option.label}
-								</ThemedText>
-							</View>
-						))}
-					</View>
-				</View>
-				<View style={styles.inputContainer}>
-					<ThemedInput
-						label="Age"
-						placeholder=""
-						lightColor="#FFFFFF"
-						darkColor="#1A4F55"
-						keyboardType="number-pad"
-						value={inputValue} // Set the value of the input
-						onChangeText={handleInputChange} // Pass the change handler
-					/>
-					<ThemedInput
-						label="Weight"
-						placeholder="In Pounds(lbs)"
-						lightColor="#FFFFFF"
-						darkColor="#1A4F55"
-						keyboardType="number-pad"
-						value={inputValue} // Set the value of the input
-						onChangeText={handleInputChange} // Pass the change handler
-					/>
-					<View>
-						<ThemedText style={styles.labelText}>Blood group</ThemedText>
-						<SelectList
-							setSelected={(val: any) => setSelected(val)}
-							data={data}
-							save="value"
-							boxStyles={styles.selectBox}
-							defaultOption={{ key: "1", value: "Group A" }}
+			<ScrollView
+				contentContainerStyle={styles.scrollContent}
+				showsVerticalScrollIndicator={false}
+			>
+				<View style={styles.container}>
+					<View style={styles.inputContainer}>
+						<ThemedInput
+							label="Full Name"
+							placeholder=""
+							lightColor="#FFFFFF"
+							darkColor="#1A4F55"
+							keyboardType="number-pad"
+							value={inputValue}
+							onChangeText={handleInputChange}
+						/>
+						<View>
+							<ThemedText style={styles.labelText}>
+								State of Residence
+							</ThemedText>
+							<SelectList
+								setSelected={(val: any) => setSelected(val)}
+								data={data}
+								save="value"
+								boxStyles={styles.selectBox}
+								defaultOption={{ key: "1", value: "Group A" }}
+							/>
+						</View>
+						<ThemedInput
+							label="Home address"
+							placeholder=""
+							lightColor="#FFFFFF"
+							darkColor="#1A4F55"
+							keyboardType="number-pad"
+							value={inputValue}
+							onChangeText={handleInputChange}
 						/>
 					</View>
-					<View>
-						<ThemedText style={styles.labelText}>Genotype</ThemedText>
-						<SelectList
-							setSelected={(val: any) => setSelected(val)}
-							data={data}
-							save="value"
-							boxStyles={styles.selectBox}
-							defaultOption={{ key: "1", value: "AA" }}
+					<View style={{ flexDirection: "column", gap: 8 }}>
+						<ThemedText style={styles.genderText}>Gender</ThemedText>
+						<View style={styles.radioContainer}>
+							{radioOptions.map((option) => (
+								<View
+									style={styles.radioOption}
+									key={option.id}
+								>
+									<RadioButton
+										id={option.id}
+										containerStyle={styles.radioButtonContainer}
+										borderColor="#3A8289"
+										onPress={() => handleChangeCategory(option.id)}
+										selected={selectedId === option.id}
+										color={Colors.primary.color}
+									/>
+									<ThemedText style={styles.radioLabel}>
+										{option.label}
+									</ThemedText>
+								</View>
+							))}
+						</View>
+					</View>
+					<View style={styles.inputContainer}>
+						<ThemedInput
+							label="Age"
+							placeholder=""
+							lightColor="#FFFFFF"
+							darkColor="#1A4F55"
+							keyboardType="number-pad"
+							value={inputValue}
+							onChangeText={handleInputChange}
 						/>
+						<ThemedInput
+							label="Weight"
+							placeholder="In Pounds(lbs)"
+							lightColor="#FFFFFF"
+							darkColor="#1A4F55"
+							keyboardType="number-pad"
+							value={inputValue}
+							onChangeText={handleInputChange}
+						/>
+						<View>
+							<ThemedText style={styles.labelText}>Blood group</ThemedText>
+							<SelectList
+								setSelected={(val: any) => setSelected(val)}
+								data={data}
+								save="value"
+								boxStyles={styles.selectBox}
+								defaultOption={{ key: "1", value: "Group A" }}
+							/>
+						</View>
+						<View>
+							<ThemedText style={styles.labelText}>Genotype</ThemedText>
+							<SelectList
+								setSelected={(val: any) => setSelected(val)}
+								data={data}
+								save="value"
+								boxStyles={styles.selectBox}
+								defaultOption={{ key: "1", value: "AA" }}
+							/>
+						</View>
 					</View>
 				</View>
-			</View>
+			</ScrollView>
 
-			{/* The themed button placed at the bottom */}
+			{/* Themed button placed at the bottom */}
 			<View style={styles.buttonContainer}>
 				<ThemedButton
 					title="Next"
 					onPress={handlePress}
-					lightColor="#3A8289" // Custom color for light theme
-					darkColor="#1A4F55" // Custom color for dark theme
+					lightColor="#3A8289"
+					darkColor="#1A4F55"
 					style={styles.button}
-					textStyle={styles.buttonText} // Custom text style
+					textStyle={styles.buttonText}
 				/>
 			</View>
 		</SafeAreaView>
@@ -146,7 +181,10 @@ export default function PatientStepOne() {
 const styles = StyleSheet.create({
 	safeAreaView: {
 		backgroundColor: "white",
-		flex: 1, // This will make the SafeAreaView take the full screen height
+		flex: 1,
+	},
+	scrollContent: {
+		paddingBottom: 20, // Avoid overlapping with the button
 	},
 	container: {
 		paddingTop: 24,
@@ -202,5 +240,10 @@ const styles = StyleSheet.create({
 		borderColor: Colors.light.border,
 		borderWidth: 1,
 		backgroundColor: "transparent", // Set background color to transparent
+	},
+	genderText: {
+		paddingHorizontal: 20,
+		color: Colors.primary.black,
+		fontWeight: "400",
 	},
 });

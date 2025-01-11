@@ -6,7 +6,7 @@ interface PatientState {
 }
 
 const usePatientStore = create<PatientState>((set) => ({
-	patientProgress: 0.5, // Initial progress value
+	patientProgress: 0.2, // Initial progress value
 	setPatientProgress: (progress) =>
 		set(() => ({ patientProgress: Math.min(Math.max(progress, 0), 1) })), // Ensure progress stays between 0 and 1,
 }));

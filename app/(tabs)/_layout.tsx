@@ -132,10 +132,33 @@ export default function TabLayout() {
 			/>
 
 			<Tabs.Screen
-				name={routes.chat}
+				name={routes.chats}
 				options={{
-					title: "Chat",
 					tabBarIcon: ({ color, focused }) => <ChatBarIcon color={color} />,
+
+					headerTitle: "Chats",
+					headerTitleStyle: {
+						fontSize: 16,
+						fontWeight: "400",
+						color: "#282828",
+					},
+					headerShown: true,
+					headerLeft: () => (
+						<Pressable
+							onPress={() => router.back()}
+							style={{ flexDirection: "row", gap: 4, paddingLeft: 15 }}
+						>
+							<ArrowBackIcon />
+						</Pressable>
+					),
+					headerRight: () => (
+						<Pressable
+							style={{ flexDirection: "row", gap: 4, paddingRight: 20 }}
+						>
+							<EllipsisIcon />
+						</Pressable>
+					),
+					headerShadowVisible: true,
 				}}
 			/>
 		</Tabs>

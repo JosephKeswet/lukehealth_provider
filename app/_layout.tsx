@@ -178,13 +178,46 @@ export default function RootLayout() {
 						),
 						headerLeft: ({ canGoBack }) => (
 							<Pressable
-								onPress={() => router.back()}
+								onPress={() => {
+									if (patientProgress > 0.2) {
+										setPatientProgress(patientProgress - 0.2);
+									} else {
+										router.back();
+									}
+								}}
 								style={{ flexDirection: "row", gap: 4 }}
 							>
 								<ArrowBackIcon />
 								<ThemedText>New Patient</ThemedText>
 							</Pressable>
 						),
+					}}
+				/>
+				<Stack.Screen
+					name={routes.chat}
+					options={{
+						title: "Chat",
+						headerStyle: {
+							backgroundColor: "#FAFAFA",
+						},
+						headerTitle: "Chat",
+						headerTitleStyle: {
+							fontSize: 16,
+							fontWeight: "400",
+							color: "#282828",
+						},
+						headerShown: false,
+
+						headerLeft: () => (
+							<Pressable
+								onPress={() => router.back()}
+								style={{ flexDirection: "row", gap: 4 }}
+							>
+								<ArrowBackIcon />
+							</Pressable>
+						),
+
+						headerShadowVisible: true,
 					}}
 				/>
 				<Stack.Screen name="+not-found" />

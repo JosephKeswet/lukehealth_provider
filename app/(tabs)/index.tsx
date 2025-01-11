@@ -26,23 +26,7 @@ import FloatingActionButton from "@/components/FloatingActionButton";
 // Floating Action Button Component
 
 // Call to Action Item Component
-const CallToActionItem = ({
-	icon,
-	headerText,
-	subText,
-}: {
-	icon: JSX.Element;
-	headerText: string;
-	subText: string;
-}) => (
-	<TouchableOpacity style={styles.sheetButton}>
-		<View>{icon}</View>
-		<View style={styles.callToActionDetails}>
-			<ThemedText style={styles.sheetHeaderText}>{headerText}</ThemedText>
-			<ThemedText style={styles.sheetSubText}>{subText}</ThemedText>
-		</View>
-	</TouchableOpacity>
-);
+
 
 // Card Component
 const Card = ({
