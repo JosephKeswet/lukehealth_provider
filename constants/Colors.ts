@@ -31,4 +31,7 @@ export const Colors = {
 		hightLightGreen: "#E5F6EF",
 		green: "#008039",
 	},
+	error: {
+		red: "red",
+	},
 };

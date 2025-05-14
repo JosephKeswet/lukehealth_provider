@@ -4,7 +4,6 @@ import { Colors } from "@/constants/Colors";
 import { router, useLocalSearchParams } from "expo-router";
 import { View, StyleSheet, SafeAreaView, TextInput } from "react-native";
 import { useState } from "react";
-import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { Image } from "expo-image";
 
 export default function CreateNoteScreen() {

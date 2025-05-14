@@ -45,3 +45,8 @@ export const doseDetails = {
 		dose: "2 tablets per dose",
 	},
 };
+
+export enum ResponseState {
+	Success = "success",
+	Error = "error",
+}

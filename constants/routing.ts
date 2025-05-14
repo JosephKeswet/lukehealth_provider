@@ -1,5 +1,12 @@
 export const routes = {
 	signup: "index",
+	signin: "signin",
+	verify_email: "verify-email",
+	verify_account: "verify-account",
+	reset_password: "reset-password",
+	create_password: "create-password",
+	forgot_password: "forgot-password",
+	push_notification: "push-notification",
 	home: "index",
 	patients: "patients",
 	patient: "patient/[id]",

@@ -36,6 +36,7 @@ export default function TabLayout() {
 				name={routes.home}
 				options={{
 					title: "Overview",
+					headerTitle: "",
 					tabBarLabelStyle: {
 						fontSize: 12,
 					},
@@ -56,7 +57,6 @@ export default function TabLayout() {
 						</View>
 					),
 					headerShown: true,
-					headerTitle: "",
 					headerShadowVisible: true,
 
 					headerRight: () => (

@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import React, { useRef } from "react";
 import { SearchComponent } from "@/components/SearchComponent";
 import EmptyPatientState from "@/components/EmptyPatientState";
-import { FloatingActionButton } from "@/components/FloatingActionButton";
+// import { FloatingActionButton } from "@/components/FloatingActionButton";
 
 export default function PatientScreen() {
 	const items = [

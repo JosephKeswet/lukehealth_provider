@@ -1,0 +1,56 @@
+export const apiRoutes = {
+	auth: {
+		login: "/provider/auth/login",
+		signup: "/provider/auth/sign-up",
+		refreshToken: "/provider/auth/refresh-tokens",
+		verifyEmail: "/provider/auth/verify-email",
+		add_password: "/provider/auth/add-password",
+		resend_otp: "/provider/auth/resend-email-otp",
+		request_password_reset: "/provider/auth/reset-password",
+		reset_pass_verify: "/provider/auth/verify-reset-otp",
+		// google_auth: "/auth/google-o-auth",
+		reset_password: "/provider/auth/reset-password",
+	},
+	health: {
+		addinfo: "/onboarding/health-info",
+		healthData: "/user/health-data",
+		updateHealthInfo: "/user/update-health-info",
+	},
+	medication: {
+		add1: "/medication/add-medication",
+		getMedications: "/medication",
+		mark_compliance: "/medication/mark-compliance",
+		get_completed_medication: "/medication/completed",
+		log_vitals: "/medication/log-vitals",
+		get_vitals: "/medication/vitals",
+	},
+	user: {
+		getAuthUser: "/provider/auth",
+		getUserInfo: "/user",
+		profileData: "/user/profile-data",
+		updatePersonalInfo: "/user/update-personal-info",
+		changePassword: "/user/change-password",
+		toggleNotifications: "/user/toggle-notification-preferences",
+	},
+	notifications: {
+		getAllNotifications: "/notifications",
+		getUnreadNotifications: "/notifications/unread",
+		markAsRead: "/notifications/read",
+		markAllAsRead: "/notifications/read-all",
+		add_push_token: "/user/add-firebase-token",
+		add_expo_token: "/user/add-expo-token",
+	},
+	chat: {
+		getChatHistories: "/chat/histories",
+		getChatMessages: "/chat/history",
+		joinRoom: "/chat/join-room",
+		sendChat: "/chat/send-chat",
+	},
+	patients: {
+		get_provider_patients: "/provider/patient/get-patients",
+	},
+	notes: {
+		create: "/notes/provider/create",
+		get: "/notes/provider",
+	},
+};

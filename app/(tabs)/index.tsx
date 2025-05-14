@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { JSX, useRef } from "react";
 import {
 	View,
 	Text,
@@ -22,11 +22,13 @@ import {
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
 import FloatingActionButton from "@/components/FloatingActionButton";
+import { useCustomQuery } from "@/frameworks/useCustomQuery";
+import useUserService from "@/services/useUserService";
+import { apiRoutes } from "@/constants/api";
 
 // Floating Action Button Component
 
 // Call to Action Item Component
-
 
 // Card Component
 const Card = ({
@@ -66,10 +68,14 @@ const HorizontalCard = ({
 // HomeScreen Component
 export default function HomeScreen() {
 	const bottomSheetRef = useRef<any>(null);
-
+	const { getAuthUser } = useUserService();
 	const openBottomSheet = () => bottomSheetRef.current?.open();
 	const closeBottomSheet = () => bottomSheetRef.current?.close();
-
+	const { data } = useCustomQuery({
+		queryFn: () => getAuthUser(),
+		queryKey: [apiRoutes.user.getAuthUser],
+	});
+	const overview = data && data?.data;
 	return (
 		<SafeAreaView style={styles.container}>
 			<ScrollView>
@@ -78,7 +84,7 @@ export default function HomeScreen() {
 					<Card
 						icon={<ActivePatientIcon />}
 						title="Active Patients"
-						value={7}
+						value={overview?.activePatients as number}
 					/>
 				</View>
 
