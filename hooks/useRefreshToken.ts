@@ -1,18 +1,47 @@
 "use client";
 
 import { apiRoutes, apiVersion } from "@/constants/api";
-import { routes } from "@/constants/routing";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { useStorage } from "./useStorage";
 import { IRefreshTokenResponse } from "@/types/auth/responses";
+import { useEffect, useState } from "react";
+import * as SecureStore from "expo-secure-store";
+import { tokenService } from "./tokenService";
 
 export const useRefreshToken = () => {
 	const { getCookie, saveCookie } = useStorage();
-	const refreshToken = getCookie("refreshToken");
-	async function handleRefreshToken(): Promise<IRefreshTokenResponse> {
+	// const [refreshToken, setRefreshToken] = useState<string | null>(null);
+
+	// // Function to fetch token from SecureStore
+	// const getValueFor = async (key: string) => {
+	// 	let result = await SecureStore.getItemAsync(key);
+	// 	return result || null; // Return null if nothing is stored
+	// };
+
+	// // Fetch token on mount
+	// useEffect(() => {
+	// 	const fetchToken = async () => {
+	// 		const storedToken = await getValueFor("refreshToken");
+
+	// 		if (storedToken) {
+	// 			setRefreshToken(storedToken);
+	// 		} else {
+	// 			console.warn("No token found in SecureStore");
+	// 			setRefreshToken(null); // Optional: explicitly set null if no token
+	// 		}
+	// 	};
+	// 	fetchToken();
+	// }, []);
+
+	const handleRefreshToken = async (): Promise<string> => {
+		const refreshToken = tokenService.getRefreshToken();
+		console.log(refreshToken);
+		if (!refreshToken) {
+			throw new Error("No refresh token found");
+		}
+
 		try {
-			const { data } = await axios.post<IRefreshTokenResponse>(
+			const { data } = await axios.post<any>(
 				`${process.env.EXPO_PUBLIC_API_URL}${apiVersion}${apiRoutes.auth.refreshToken}`,
 				{},
 				{
@@ -21,26 +50,24 @@ export const useRefreshToken = () => {
 					},
 				}
 			);
-			console.log("refresh", data);
-			saveCookie("token", data.token); // Update token cookie with new token
-			saveCookie("refreshToken", data.refreshToken); // Update refresh token cookie with new refresh token
-			return data;
-		} catch (error: any) {
-			if (axios.isAxiosError(error)) {
-				const axiosError = error;
-				if (axiosError.response) {
-					const errorMessage = axiosError?.response?.data?.message;
-					return axiosError?.response?.data;
-				}
+
+			console.log("data", data);
+
+			tokenService.setToken(data.token);
+			// Optionally update refreshToken too if your API sends a new one:
+			if (data.refreshToken) {
+				tokenService.setRefreshToken(data.refreshToken);
+				await SecureStore.setItemAsync("refreshToken", data.refreshToken);
 			}
-			console.error("Error:", error.message);
+
+			await SecureStore.setItemAsync("token", data.token);
+
+			return data.token;
+		} catch (error: any) {
+			// handle error logging same as before
 			throw error;
 		}
-	}
-
-	handleRefreshToken();
-
-	return {
-		handleRefreshToken,
 	};
+
+	return { handleRefreshToken };
 };

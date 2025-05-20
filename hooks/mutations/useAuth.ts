@@ -21,6 +21,7 @@ import { MutationAdapter } from "@/frameworks/adapters/mutationAdapter";
 import { ResponseState } from "@/constants/enums";
 import { useQueryClient } from "@tanstack/react-query";
 import useToast from "../useToast";
+import { tokenService } from "../tokenService";
 
 export default function useAuth(mutationAdapter: MutationAdapter<any, any>) {
 	const { saveCookie } = useStorage();
@@ -140,9 +141,13 @@ export default function useAuth(mutationAdapter: MutationAdapter<any, any>) {
 	};
 
 	const handleSignInSuccess = (
-		{ token, message, refreshToken }: ISignInResponse,
+		{ token, message, refreshToken }: any,
 		email: string
 	) => {
+		console.log("refreshToken", refreshToken!);
+		tokenService.setToken(token!);
+		tokenService.setRefreshToken(refreshToken!);
+
 		saveCookie("token", token!);
 		saveCookie("refreshToken", refreshToken!);
 

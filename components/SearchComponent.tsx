@@ -7,7 +7,7 @@ import { MessageIcon, PhoneIcon } from "@/constants/icons";
 import { router } from "expo-router";
 
 interface SearchComponentProps {
-	data: string[]; // Array of items to search from
+	data: { fullName: string }[]; // Array of items to search from
 	onSearchResult?: (results: string[]) => void; // Callback to pass filtered results
 }
 
@@ -17,19 +17,19 @@ export const SearchComponent = ({
 }: SearchComponentProps) => {
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const handleSearch = (query: string) => {
-		setSearchQuery(query);
-		const filteredData = data.filter((item) =>
-			item.toLowerCase().includes(query.toLowerCase())
-		);
-		if (onSearchResult) {
-			onSearchResult(filteredData); // Notify parent of the filtered results
-		}
-	};
+	// const handleSearch = (query: string) => {
+	// 	setSearchQuery(query);
+	// 	const filteredData = data.filter((item) =>
+	// 		item.toLowerCase().includes(query.toLowerCase())
+	// 	);
+	// 	if (onSearchResult) {
+	// 		onSearchResult(filteredData); // Notify parent of the filtered results
+	// 	}
+	// };
 
 	return (
 		<View style={styles.container}>
-			<ThemedInput
+			{/* <ThemedInput
 				placeholder="Search for patients"
 				value={searchQuery}
 				onChangeText={handleSearch}
@@ -37,11 +37,9 @@ export const SearchComponent = ({
 					borderColor: "#F4F6F8",
 					borderRadius: 24,
 				}}
-			/>
+			/> */}
 			<FlatList
-				data={data.filter((item) =>
-					item.toLowerCase().includes(searchQuery.toLowerCase())
-				)}
+				data={data}
 				keyExtractor={(item, index) => index.toString()}
 				renderItem={({ item }) => (
 					<Pressable
@@ -66,7 +64,9 @@ export const SearchComponent = ({
 								}}
 							></View>
 							<View>
-								<ThemedText style={styles.resultText}>{item}</ThemedText>
+								<ThemedText style={styles.resultText}>
+									{item.fullName}
+								</ThemedText>
 								<ThemedText
 									style={{
 										fontSize: 11,

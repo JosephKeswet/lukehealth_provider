@@ -1,7 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 export function useStorage() {
 	// Save access token
-	const saveCookie = async (key: string, value: string) => {
+	const saveCookie = async (key: string, value: any) => {
 		try {
 			await SecureStore.setItemAsync(key, value);
 			console.log(`${key} saved!`);

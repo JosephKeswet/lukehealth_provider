@@ -1,4 +1,4 @@
-import React, { JSX, useRef } from "react";
+import React, { JSX, useEffect, useRef } from "react";
 import {
 	View,
 	Text,
@@ -25,6 +25,7 @@ import FloatingActionButton from "@/components/FloatingActionButton";
 import { useCustomQuery } from "@/frameworks/useCustomQuery";
 import useUserService from "@/services/useUserService";
 import { apiRoutes } from "@/constants/api";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Floating Action Button Component
 
@@ -69,13 +70,19 @@ const HorizontalCard = ({
 export default function HomeScreen() {
 	const bottomSheetRef = useRef<any>(null);
 	const { getAuthUser } = useUserService();
-	const openBottomSheet = () => bottomSheetRef.current?.open();
-	const closeBottomSheet = () => bottomSheetRef.current?.close();
-	const { data } = useCustomQuery({
-		queryFn: () => getAuthUser(),
+	const queryClient = useQueryClient();
+	useEffect(() => {
+		queryClient.invalidateQueries({
+			queryKey: [apiRoutes.user.getAuthUser],
+		});
+	}, []);
+
+	const { data, refetch } = useCustomQuery({
+		queryFn: getAuthUser,
 		queryKey: [apiRoutes.user.getAuthUser],
 	});
 	const overview = data && data?.data;
+
 	return (
 		<SafeAreaView style={styles.container}>
 			<ScrollView>

@@ -23,10 +23,12 @@ interface ThemedInputProps extends TextInputProps {
 	onChangeText?: (text: string) => void;
 	value?: string;
 	isDateInput?: boolean;
+	isTimeInput?: boolean; // ✅ Add this line
 	isMultiline?: boolean;
-	isSelect?: boolean; // New prop to check if it's a dropdown
-	options?: string[]; // Array of options for the select dropdown
-	isPassword?: boolean; // New prop to check if it's a password field
+	isSelect?: boolean;
+	options?: string[];
+	isPassword?: boolean;
+	error?: string;
 }
 
 export function ThemedInput({
@@ -38,8 +40,10 @@ export function ThemedInput({
 	isDateInput = false,
 	isMultiline = false,
 	isSelect = false, // Default to false
+	isTimeInput = false, // <-- add this line
 	options = [], // Default to an empty array if no options are provided
 	isPassword = false, // New prop for password visibility toggle
+	error,
 	...otherProps
 }: ThemedInputProps) {
 	const [isFocused, setIsFocused] = useState(false);
@@ -47,6 +51,7 @@ export function ThemedInput({
 	const [showDatePicker, setShowDatePicker] = useState(false);
 	const [selectedOption, setSelectedOption] = useState<string | undefined>("");
 	const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
+	const [selectedTime, setSelectedTime] = useState<Date | undefined>(); // ✅ Add this
 
 	const borderColor = useThemeColor(
 		{ light: lightColor, dark: darkColor },
@@ -67,13 +72,20 @@ export function ThemedInput({
 		}
 	};
 
+	const handleTimeChange = (event: any, date?: Date) => {
+		if (Platform.OS !== "ios") setShowDatePicker(false);
+		if (date) {
+			setSelectedTime(date);
+			onChangeText?.(date.toISOString());
+		}
+	};
+
 	// Handle select option change
 	const handleSelectChange = (value: string) => {
 		setSelectedOption(value);
 		onChangeText?.(value);
 		bottomSheetRef.current?.close(); // Close the bottom sheet after selection
 	};
-
 	// Handle password visibility toggle
 	const togglePasswordVisibility = () => {
 		setShowPassword((prevState) => !prevState);
@@ -155,6 +167,7 @@ export function ThemedInput({
 								value={selectedDate || new Date()}
 								mode="date"
 								display="spinner"
+								textColor="black"
 								onChange={(event, date) => {
 									handleDateChange(event, date);
 								}}
@@ -206,6 +219,57 @@ export function ThemedInput({
 						</View>
 					</RBSheet>
 				</>
+			) : isTimeInput ? (
+				<>
+					<TouchableOpacity
+						style={[
+							styles.input,
+							{
+								borderColor: isFocused ? Colors.primary.color : "#F6F6F6",
+								backgroundColor: isFocused ? "white" : "#F6F6F6",
+								flexDirection: "row",
+								justifyContent: "space-between",
+								alignItems: "center",
+								paddingHorizontal: 12,
+							},
+						]}
+						onPress={() => bottomSheetRef.current?.open()}
+					>
+						<Text style={{ color: selectedTime ? "#000" : "#999" }}>
+							{selectedTime
+								? selectedTime.toLocaleTimeString([], {
+										hour: "numeric",
+										minute: "2-digit",
+										hour12: true, // ✅ Enables AM/PM format
+								  })
+								: placeholder}
+						</Text>
+						<Icon
+							name="clock"
+							size={20}
+							color="#999"
+						/>
+					</TouchableOpacity>
+
+					<RBSheet
+						ref={bottomSheetRef}
+						height={300}
+						openDuration={250}
+						customStyles={{ container: styles.bottomSheetContainer }}
+					>
+						<View style={styles.modalContent}>
+							<RNDateTimePicker
+								value={selectedTime || new Date()}
+								mode="time" // ✅ Use time mode
+								display="spinner"
+								textColor="black"
+								onChange={(event, date) => {
+									handleTimeChange(event, date);
+								}}
+							/>
+						</View>
+					</RBSheet>
+				</>
 			) : (
 				<TextInput
 					{...otherProps}
@@ -226,6 +290,7 @@ export function ThemedInput({
 					onChangeText={onChangeText}
 				/>
 			)}
+			{error ? <Text style={styles.errorText}>{error}</Text> : null}
 		</View>
 	);
 }
@@ -269,5 +334,10 @@ const styles = StyleSheet.create({
 	picker: {
 		height: 200,
 		width: "100%",
+	},
+	errorText: {
+		color: "red",
+		fontSize: 12,
+		marginTop: 4,
 	},
 });

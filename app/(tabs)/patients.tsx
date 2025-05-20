@@ -1,7 +1,11 @@
 import { StyleSheet, Text, View } from "react-native";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { SearchComponent } from "@/components/SearchComponent";
 import EmptyPatientState from "@/components/EmptyPatientState";
+import usePatientService from "@/services/usePatientService";
+import { useQueryClient } from "@tanstack/react-query";
+import { apiRoutes } from "@/constants/api";
+import { useCustomQuery } from "@/frameworks/useCustomQuery";
 // import { FloatingActionButton } from "@/components/FloatingActionButton";
 
 export default function PatientScreen() {
@@ -22,6 +26,20 @@ export default function PatientScreen() {
 	const openBottomSheet = () => bottomSheetRef.current?.open();
 	const closeBottomSheet = () => bottomSheetRef.current?.close();
 
+	const { getPatients } = usePatientService();
+	const queryClient = useQueryClient();
+	useEffect(() => {
+		queryClient.invalidateQueries({
+			queryKey: [apiRoutes.patients.get_provider_patients],
+		});
+	}, []);
+
+	const { data, refetch } = useCustomQuery({
+		queryFn: getPatients,
+		queryKey: [apiRoutes.patients.get_provider_patients],
+	});
+	console.log(data);
+
 	return (
 		<View
 			style={{
@@ -30,7 +48,7 @@ export default function PatientScreen() {
 			}}
 		>
 			<SearchComponent
-				data={items}
+				data={data.data}
 				onSearchResult={handleSearchResult}
 			/>
 			{/* <EmptyPatientState /> */}

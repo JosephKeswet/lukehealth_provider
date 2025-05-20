@@ -16,35 +16,119 @@ import { GenderCategory } from "@/constants/enums";
 import useHealthStore from "@/store";
 import { ThemedInput } from "@/components/ThemedInput";
 import { SelectList } from "react-native-dropdown-select-list";
+import { useAddPatientStore } from "@/store/usAddPatientStore";
+import {
+	bloodGroupData,
+	genotypeData,
+	statesInNigeria,
+} from "@/constants/patient";
+import { z } from "zod";
+
+// Define the Zod schema for validation
+const patientSchema = z.object({
+	firstName: z.string().min(1, "First name is required"),
+	lastName: z.string().min(1, "Last name is required"),
+	email: z.string().email("Invalid email address"),
+	stateOfResidence: z.string().min(1, "State of residence is required"),
+	address: z.string().min(1, "Address is required"),
+	gender: z.enum([GenderCategory.Male, GenderCategory.Female], {
+		errorMap: () => ({ message: "Gender must be selected" }),
+	}),
+	dateOfBirth: z
+		.string()
+		.min(1, "Date of birth is required")
+		.refine(
+			(date) => {
+				// Basic YYYY-MM-DD validation with regex
+				return /^\d{4}-\d{2}-\d{2}$/.test(date);
+			},
+			{ message: "Date of birth must be in YYYY-MM-DD format" }
+		),
+	prescribingDoctorContact: z.string().optional(),
+	emergencyContact: z.string().optional(),
+
+	// .regex(/^(?:\+234|0)[789][01]\d{8}$/, "Invalid Nigerian contact number"),
+	// weight: z
+	// 	.string()
+	// 	.min(1, "Weight is required")
+	// 	.refine((w) => !isNaN(Number(w)) && Number(w) > 0, {
+	// 		message: "Weight must be a positive number",
+	// 	}),
+	// bloodGroup: z.string().min(1, "Blood group is required"),
+	// genoType: z.string().min(1, "Genotype is required"),
+});
 
 export default function PatientStepOne() {
 	const { height } = Dimensions.get("window");
 	const [selectedId, setSelectedId] = useState<string>("");
 	const [selected, setSelected] = useState("Nigeria");
+	const { patient, updateField } = useAddPatientStore();
 
 	const setPatientProgress = useHealthStore(
 		(state) => state.setPatientProgress
 	);
-	const [inputValue, setInputValue] = useState("");
-	const data = [
-		{ key: "1", value: "AA" },
-		{ key: "2", value: "AS" },
-		{ key: "3", value: "SS" },
-		{ key: "4", value: "AC" },
-		{ key: "5", value: "SC" },
-		{ key: "6", value: "CC" },
-	];
+	const [errors, setErrors] = useState<Record<string, string>>({});
 
-	const handleInputChange = (text: string) => {
-		setInputValue(text);
+	const handleInputChange = (field: keyof typeof patient, value: string) => {
+		if (field === "dateOfBirth") {
+			// Try to parse the date and convert to YYYY-MM-DD format
+			const date = new Date(value);
+
+			if (!isNaN(date.getTime())) {
+				// Format date as YYYY-MM-DD
+				const year = date.getFullYear();
+				const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-based
+				const day = String(date.getDate()).padStart(2, "0");
+
+				value = `${year}-${month}-${day}`;
+			} else {
+				// If invalid date, keep as is or clear
+				value = "";
+			}
+		}
+		updateField(field, value);
+		setErrors((prevErrors) => {
+			if (prevErrors[field]) {
+				const newErrors = { ...prevErrors };
+				delete newErrors[field]; // Remove error for this field
+				return newErrors;
+			}
+			return prevErrors;
+		});
 	};
 
 	const handleChangeCategory = (id: string) => {
 		setSelectedId(id);
+		updateField("gender", id);
+		setErrors((prevErrors) => {
+			if (prevErrors.gender) {
+				const newErrors = { ...prevErrors };
+				delete newErrors.gender;
+				return newErrors;
+			}
+			return prevErrors;
+		});
 	};
 
 	const handlePress = () => {
-		setPatientProgress(0.4); // Update progress to move to the next step
+		// Validate patient object on submit
+		const result = patientSchema.safeParse(patient);
+
+		if (!result.success) {
+			// Map errors to display
+			const fieldErrors: Record<string, string> = {};
+			for (const err of result.error.errors) {
+				if (err.path.length > 0) {
+					fieldErrors[err.path[0]] = err.message;
+				}
+			}
+			setErrors(fieldErrors);
+			return; // Stop progress
+		}
+
+		// Clear errors if valid
+		setErrors({});
+		setPatientProgress(0.4); // move to next step
 	};
 
 	const radioOptions = [
@@ -57,6 +141,7 @@ export default function PatientStepOne() {
 			label: GenderCategory.Female,
 		},
 	];
+	console.log(patient);
 
 	return (
 		<SafeAreaView style={[styles.safeAreaView, { height }]}>
@@ -67,34 +152,110 @@ export default function PatientStepOne() {
 				<View style={styles.container}>
 					<View style={styles.inputContainer}>
 						<ThemedInput
-							label="Full Name"
+							label="First Name"
 							placeholder=""
 							lightColor="#FFFFFF"
 							darkColor="#1A4F55"
-							keyboardType="number-pad"
-							value={inputValue}
-							onChangeText={handleInputChange}
+							keyboardType="default"
+							value={patient.firstName}
+							onChangeText={(text) => handleInputChange("firstName", text)}
+							error={errors.firstName}
 						/>
+						<ThemedInput
+							label="Last Name"
+							placeholder=""
+							lightColor="#FFFFFF"
+							darkColor="#1A4F55"
+							keyboardType="default"
+							value={patient.lastName}
+							onChangeText={(text) => handleInputChange("lastName", text)}
+							error={errors.lastName}
+						/>
+						<ThemedInput
+							label="Email"
+							placeholder=""
+							lightColor="#FFFFFF"
+							darkColor="#1A4F55"
+							keyboardType="email-address"
+							value={patient.email}
+							onChangeText={(text) => handleInputChange("email", text)}
+							error={errors.email}
+						/>
+						{/* <View style={styles.inputContainer}> */}
+						<ThemedInput
+							label="Date Of Birth"
+							placeholder="YYYY-MM-DD"
+							lightColor="#FFFFFF"
+							darkColor="#1A4F55"
+							keyboardType="default"
+							isDateInput={true}
+							onChangeText={(text) => handleInputChange("dateOfBirth", text)}
+							value={patient.dateOfBirth}
+							error={errors.dateOfBirth}
+						/>
+						{/* </View> */}
 						<View>
 							<ThemedText style={styles.labelText}>
 								State of Residence
 							</ThemedText>
 							<SelectList
-								setSelected={(val: any) => setSelected(val)}
-								data={data}
+								setSelected={(val: any) => {
+									setSelected(val);
+									updateField("stateOfResidence", val);
+									setErrors((prevErrors) => {
+										if (prevErrors.stateOfResidence) {
+											const newErrors = { ...prevErrors };
+											delete newErrors.stateOfResidence;
+											return newErrors;
+										}
+										return prevErrors;
+									});
+								}}
+								data={statesInNigeria}
 								save="value"
 								boxStyles={styles.selectBox}
-								defaultOption={{ key: "1", value: "Group A" }}
+								defaultOption={statesInNigeria[0]}
 							/>
+							{errors.stateOfResidence && (
+								<ThemedText style={styles.errorText}>
+									{errors.stateOfResidence}
+								</ThemedText>
+							)}
 						</View>
+
 						<ThemedInput
 							label="Home address"
 							placeholder=""
 							lightColor="#FFFFFF"
 							darkColor="#1A4F55"
-							keyboardType="number-pad"
-							value={inputValue}
-							onChangeText={handleInputChange}
+							keyboardType="default"
+							value={patient.address}
+							onChangeText={(text) => handleInputChange("address", text)}
+							error={errors.address}
+						/>
+						<ThemedInput
+							label="Contact of prescribing doctor (optional)"
+							placeholder=""
+							lightColor="#FFFFFF"
+							darkColor="#1A4F55"
+							keyboardType="phone-pad"
+							value={patient.prescribingDoctorContact}
+							onChangeText={(text) =>
+								handleInputChange("prescribingDoctorContact", text)
+							}
+							error={errors.prescribingDoctorContact}
+						/>
+						<ThemedInput
+							label="Emergency contact (optional)"
+							placeholder=""
+							lightColor="#FFFFFF"
+							darkColor="#1A4F55"
+							keyboardType="phone-pad"
+							value={patient.emergencyContact}
+							onChangeText={(text) =>
+								handleInputChange("prescribingDoctorContact", text)
+							}
+							error={errors.emergencyContact}
 						/>
 					</View>
 					<View style={{ flexDirection: "column", gap: 8 }}>
@@ -109,8 +270,8 @@ export default function PatientStepOne() {
 										id={option.id}
 										containerStyle={styles.radioButtonContainer}
 										borderColor="#3A8289"
-										onPress={() => handleChangeCategory(option.id)}
 										selected={selectedId === option.id}
+										onPress={() => handleChangeCategory(option.id)}
 										color={Colors.primary.color}
 									/>
 									<ThemedText style={styles.radioLabel}>
@@ -119,51 +280,13 @@ export default function PatientStepOne() {
 								</View>
 							))}
 						</View>
-					</View>
-					<View style={styles.inputContainer}>
-						<ThemedInput
-							label="Age"
-							placeholder=""
-							lightColor="#FFFFFF"
-							darkColor="#1A4F55"
-							keyboardType="number-pad"
-							value={inputValue}
-							onChangeText={handleInputChange}
-						/>
-						<ThemedInput
-							label="Weight"
-							placeholder="In Pounds(lbs)"
-							lightColor="#FFFFFF"
-							darkColor="#1A4F55"
-							keyboardType="number-pad"
-							value={inputValue}
-							onChangeText={handleInputChange}
-						/>
-						<View>
-							<ThemedText style={styles.labelText}>Blood group</ThemedText>
-							<SelectList
-								setSelected={(val: any) => setSelected(val)}
-								data={data}
-								save="value"
-								boxStyles={styles.selectBox}
-								defaultOption={{ key: "1", value: "Group A" }}
-							/>
-						</View>
-						<View>
-							<ThemedText style={styles.labelText}>Genotype</ThemedText>
-							<SelectList
-								setSelected={(val: any) => setSelected(val)}
-								data={data}
-								save="value"
-								boxStyles={styles.selectBox}
-								defaultOption={{ key: "1", value: "AA" }}
-							/>
-						</View>
+						{errors.gender && (
+							<ThemedText style={styles.errorText}>{errors.gender}</ThemedText>
+						)}
 					</View>
 				</View>
 			</ScrollView>
 
-			{/* Themed button placed at the bottom */}
 			<View style={styles.buttonContainer}>
 				<ThemedButton
 					title="Next"
@@ -184,16 +307,15 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	scrollContent: {
-		paddingBottom: 20, // Avoid overlapping with the button
+		paddingBottom: 20,
 	},
 	container: {
 		paddingTop: 24,
-		flex: 1, // Take up remaining space between header and button
+		flex: 1,
 		flexDirection: "column",
 		gap: 24,
 		alignItems: "flex-start",
 	},
-
 	radioContainer: {
 		paddingHorizontal: 10,
 		flexDirection: "row",
@@ -215,7 +337,7 @@ const styles = StyleSheet.create({
 	},
 	buttonContainer: {
 		paddingHorizontal: 20,
-		marginTop: "auto", // Push the button to the bottom of the screen
+		marginTop: "auto",
 	},
 	button: {
 		marginBottom: 20,
@@ -239,11 +361,17 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		borderColor: Colors.light.border,
 		borderWidth: 1,
-		backgroundColor: "transparent", // Set background color to transparent
+		backgroundColor: "transparent",
 	},
 	genderText: {
 		paddingHorizontal: 20,
 		color: Colors.primary.black,
 		fontWeight: "400",
+	},
+	errorText: {
+		color: "red",
+		fontSize: 12,
+		paddingHorizontal: 20,
+		marginTop: 4,
 	},
 });

@@ -162,6 +162,7 @@ export const signIn = async (payload: ISignIn): Promise<ISignInResponse> => {
 			`${process.env.EXPO_PUBLIC_API_URL}${apiVersion}${apiRoutes.auth.login}`,
 			payload
 		);
+		console.log("service", data);
 
 		return data;
 	} catch (error: any) {

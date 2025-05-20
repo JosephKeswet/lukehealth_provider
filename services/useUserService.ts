@@ -43,19 +43,17 @@ export default function useUserService() {
 		}
 	};
 
-	const getAuthUser = async (): Promise<IGetAuthUser> => {
+	const getAuthUser = async (): Promise<any> => {
 		// if (checkAuthRoutes(pathname)) {
 		//   return;
 		// }
 
 		try {
 			const { data } = await axiosAuth.get(
-				`${apiVersion}${apiRoutes.user.getAuthUser}`
+				`${process.env.EXPO_PUBLIC_API_URL}${apiVersion}${apiRoutes.user.getAuthUser}`
 			);
-			console.log("hmmm", data);
 			return data;
 		} catch (error: any) {
-			console.log(error);
 			if (axios.isAxiosError(error)) {
 				const axiosError = error;
 				if (axiosError.response) {

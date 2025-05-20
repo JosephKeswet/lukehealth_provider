@@ -1,4 +1,6 @@
+import { tokenService } from "@/hooks/tokenService";
 import { Message } from "@/types";
+import * as SecureStore from "expo-secure-store";
 
 export const formatDate = (date: Date) => {
 	const options: Intl.DateTimeFormatOptions = {
@@ -32,3 +34,15 @@ export const formatTime = (date: Date) => {
 		})
 		.toUpperCase();
 };
+
+export async function initializeTokens() {
+	const refreshToken = await SecureStore.getItemAsync("refreshToken");
+	if (refreshToken) {
+		tokenService.setRefreshToken(refreshToken); // add this method to tokenService
+	}
+
+	const accessToken = await SecureStore.getItemAsync("token");
+	if (accessToken) {
+		tokenService.setToken(accessToken);
+	}
+}

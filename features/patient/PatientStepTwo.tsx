@@ -22,6 +22,21 @@ import * as ImagePicker from "expo-image-picker"; // For image selection
 import { router } from "expo-router";
 import usePatientStore from "@/store";
 import CustomInputWithSuggesstion from "@/components/CustomInputWithSuggestion";
+import { z } from "zod";
+import { useAddPatientStore } from "@/store/usAddPatientStore";
+import { bloodGroupData, genotypeData } from "@/constants/patient";
+
+// Define the Zod schema for validation
+const patientSchema = z.object({
+	weight: z
+		.string()
+		.min(1, "Weight is required")
+		.refine((w) => !isNaN(Number(w)) && Number(w) > 0, {
+			message: "Weight must be a positive number",
+		}),
+	bloodGroup: z.string().min(1, "Blood group is required"),
+	genoType: z.string().min(1, "Genotype is required"),
+});
 
 export default function PatientStepTwo() {
 	const { height } = Dimensions.get("window");
@@ -30,6 +45,9 @@ export default function PatientStepTwo() {
 	const [inputValue, setInputValue] = useState("");
 	const [imageUri, setImageUri] = useState<string | null>(null); // State for storing the selected image
 	const [permissionGranted, setPermissionGranted] = useState(false); // State for image picker permission
+	const [errors, setErrors] = useState<Record<string, string>>({});
+
+	const { patient, updateField } = useAddPatientStore();
 
 	const setPatientProgress = usePatientStore(
 		(state) => state.setPatientProgress
@@ -46,10 +64,6 @@ export default function PatientStepTwo() {
 			label: YesOrNoCategory.No,
 		},
 	];
-
-	const handleInputChange = (text: string) => {
-		setInputValue(text);
-	};
 
 	const handleChangeCategory = (id: string) => {
 		setSelectedId(id);
@@ -80,12 +94,71 @@ export default function PatientStepTwo() {
 		}
 	};
 
+	const handleInputChange = (field: keyof typeof patient, value: string) => {
+		updateField(field, value);
+		setErrors((prevErrors) => {
+			if (prevErrors[field]) {
+				const newErrors = { ...prevErrors };
+				delete newErrors[field]; // Remove error for this field
+				return newErrors;
+			}
+			return prevErrors;
+		});
+	};
+
 	return (
 		<SafeAreaView style={[styles.safeAreaView, { height }]}>
 			<View style={styles.container}>
 				{/* Custom input fields */}
 				<View style={styles.inputContainer}>
-					<CustomInputWithSuggesstion
+					<ThemedInput
+						label="Weight"
+						placeholder="In Kilograms(kg)"
+						lightColor="#FFFFFF"
+						darkColor="#1A4F55"
+						keyboardType="number-pad"
+						value={patient.weight}
+						onChangeText={(text) => handleInputChange("weight", text)}
+						error={errors.weight}
+					/>
+					<View>
+						<ThemedText style={styles.labelText}>Blood group</ThemedText>
+						<SelectList
+							setSelected={(val: any) => {
+								setSelected(val);
+								updateField("bloodGroup", val);
+							}}
+							data={bloodGroupData}
+							save="value"
+							boxStyles={styles.selectBox}
+							defaultOption={{ key: "1", value: "Group A" }}
+						/>
+						{errors.bloodGroup && (
+							<ThemedText style={styles.errorText}>
+								{errors.bloodGroup}
+							</ThemedText>
+						)}
+					</View>
+
+					<View>
+						<ThemedText style={styles.labelText}>Genotype</ThemedText>
+						<SelectList
+							setSelected={(val: any) => {
+								setSelected(val);
+								updateField("genoType", val);
+							}}
+							data={genotypeData}
+							save="value"
+							boxStyles={styles.selectBox}
+							defaultOption={{ key: "1", value: "AA" }}
+						/>
+						{errors.genoType && (
+							<ThemedText style={styles.errorText}>
+								{errors.genoType}
+							</ThemedText>
+						)}
+					</View>
+					{/* <CustomInputWithSuggesstion
 						label="Medical Condition"
 						placeholder="E.g Diabetes"
 						values={suggestionValues}
@@ -105,7 +178,7 @@ export default function PatientStepTwo() {
 						values={["Nuts"]}
 						inputValue={inputValue}
 						onChange={handleInputChange}
-					/>
+					/> */}
 				</View>
 
 				{/* Radio button section */}
@@ -277,5 +350,22 @@ const styles = StyleSheet.create({
 	buttonText: {
 		fontSize: 18,
 		fontWeight: "600",
+	},
+	labelText: {
+		fontSize: 14,
+		fontWeight: "400",
+		marginBottom: 6,
+	},
+	selectBox: {
+		borderRadius: 8,
+		borderColor: Colors.light.border,
+		borderWidth: 1,
+		backgroundColor: "transparent",
+	},
+	errorText: {
+		color: "red",
+		fontSize: 12,
+		paddingHorizontal: 20,
+		marginTop: 4,
 	},
 });
