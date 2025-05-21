@@ -1,36 +1,15 @@
 // stores/useAddPatientStore.ts
+import { IPatient } from "@/types/patient/payload";
 import { create } from "zustand";
 
-type Patient = {
-	firstName: string;
-	lastName: string;
-	fullName: string; // computed from firstName + lastName
-	email: string;
-	phone: string;
-	dateOfBirth: string;
-	stateOfResidence: string;
-	address: string;
-	prescribingDoctorContact: string;
-	emergencyContact: string;
-	gender: "male" | "female" | string;
-	weight: string;
-	bloodGroup: string;
-	genoType: string;
-	medicalCondition: string;
-	lifestyleConditions: string[];
-	currentMedications: string[];
-	takenHerbalMedications: boolean;
-	dailyExercise: boolean;
-};
-
 type PatientStore = {
-	patient: Patient;
-	updateField: <K extends keyof Patient>(field: K, value: Patient[K]) => void;
-	setPatient: (data: Partial<Patient>) => void;
+	patient: IPatient;
+	updateField: <K extends keyof IPatient>(field: K, value: IPatient[K]) => void;
+	setPatient: (data: Partial<IPatient>) => void;
 	reset: () => void;
 };
 
-const initialState: Patient = {
+const initialState: IPatient = {
 	firstName: "",
 	lastName: "",
 	fullName: "",

@@ -56,3 +56,5 @@ export const genotypeData = [
 	{ key: "5", value: "SC" },
 	{ key: "6", value: "CC" },
 ];
+
+export const lifeStyleConditionsData = [{ label: "Smoking", value: "smoking" }];

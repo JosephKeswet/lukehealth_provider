@@ -1,11 +1,8 @@
 import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import usePatientStore from "@/store";
 import PatientStepOne from "@/features/patient/PatientStepOne";
 import PatientStepTwo from "@/features/patient/PatientStepTwo";
-import PatientStepThree from "@/features/patient/PatientStepThree";
-import PatientStepFour from "@/features/patient/PatientStepFour";
-
 export default function PatientInfoScreen() {
 	const patientProgress = usePatientStore((state) => state.patientProgress);
 
@@ -14,12 +11,12 @@ export default function PatientInfoScreen() {
 		switch (patientProgress) {
 			case 0.2:
 				return <PatientStepOne />;
-			case 0.4:
-				return <PatientStepTwo />;
-			case 0.6:
-				return <PatientStepThree />;
 			case 0.8:
-				return <PatientStepFour />;
+				return <PatientStepTwo />;
+			// case 0.6:
+			// 	return <PatientStepThree />;
+			// case 0.8:
+			// 	return <PatientStepFour />;
 			default:
 				return <PatientStepOne />;
 		}

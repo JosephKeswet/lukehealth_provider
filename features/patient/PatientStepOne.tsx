@@ -128,7 +128,7 @@ export default function PatientStepOne() {
 
 		// Clear errors if valid
 		setErrors({});
-		setPatientProgress(0.4); // move to next step
+		setPatientProgress(0.8); // move to next step
 	};
 
 	const radioOptions = [
@@ -180,6 +180,28 @@ export default function PatientStepOne() {
 							value={patient.email}
 							onChangeText={(text) => handleInputChange("email", text)}
 							error={errors.email}
+						/>
+						<ThemedInput
+							label="Medical Condition"
+							placeholder=""
+							lightColor="#FFFFFF"
+							darkColor="#1A4F55"
+							keyboardType="default"
+							value={patient.medicalCondition}
+							onChangeText={(text) =>
+								handleInputChange("medicalCondition", text)
+							}
+							error={errors.medicalCondition}
+						/>
+						<ThemedInput
+							label="Patient Phone"
+							placeholder=""
+							lightColor="#FFFFFF"
+							darkColor="#1A4F55"
+							keyboardType="phone-pad"
+							value={patient.phone}
+							onChangeText={(text) => handleInputChange("phone", text)}
+							error={errors.phone}
 						/>
 						{/* <View style={styles.inputContainer}> */}
 						<ThemedInput
@@ -253,7 +275,7 @@ export default function PatientStepOne() {
 							keyboardType="phone-pad"
 							value={patient.emergencyContact}
 							onChangeText={(text) =>
-								handleInputChange("prescribingDoctorContact", text)
+								handleInputChange("emergencyContact", text)
 							}
 							error={errors.emergencyContact}
 						/>

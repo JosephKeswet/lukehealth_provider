@@ -47,10 +47,10 @@ export default function PatientScreen() {
 				height: "100%",
 			}}
 		>
-			<SearchComponent
+			{/* <SearchComponent
 				data={data.data}
 				onSearchResult={handleSearchResult}
-			/>
+			/> */}
 			{/* <EmptyPatientState /> */}
 			{/* <FloatingActionButton onPress={openBottomSheet} /> */}
 		</View>

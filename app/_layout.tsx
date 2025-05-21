@@ -19,6 +19,8 @@ import usePatientStore from "@/store";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
+import toastConfig from "@/libs/toastConfig";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -283,6 +285,7 @@ export default function RootLayout() {
 				</Stack>
 				<StatusBar style="auto" />
 			</ThemeProvider>
+			<Toast config={toastConfig} />
 		</QueryClientProvider>
 	);
 }

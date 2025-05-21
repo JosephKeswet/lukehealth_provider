@@ -24,7 +24,15 @@ import usePatientStore from "@/store";
 import CustomInputWithSuggesstion from "@/components/CustomInputWithSuggestion";
 import { z } from "zod";
 import { useAddPatientStore } from "@/store/usAddPatientStore";
-import { bloodGroupData, genotypeData } from "@/constants/patient";
+import {
+	bloodGroupData,
+	genotypeData,
+	lifeStyleConditionsData,
+} from "@/constants/patient";
+import { useCustomMutation } from "@/frameworks/useCustomMutation";
+import usePatientService from "@/services/usePatientService";
+import usePatient from "@/hooks/mutations/usePatient";
+import Loader from "@/components/Loader";
 
 // Define the Zod schema for validation
 const patientSchema = z.object({
@@ -36,6 +44,17 @@ const patientSchema = z.object({
 		}),
 	bloodGroup: z.string().min(1, "Blood group is required"),
 	genoType: z.string().min(1, "Genotype is required"),
+	lifestyleConditions: z.string().min(1, "Lifestyle condition is required"),
+	takenHerbalMedications: z.boolean({
+		required_error: "Please indicate if you've taken herbal medications",
+	}),
+	dailyExercise: z.boolean({
+		required_error: "Please indicate if you exercise daily",
+	}),
+	// Uncomment these if CustomInputWithSuggestion fields are added back
+	// medicalCondition: z.string().optional(),
+	// currentMedications: z.string().optional(),
+	// allergies: z.string().optional(),
 });
 
 export default function PatientStepTwo() {
@@ -46,6 +65,9 @@ export default function PatientStepTwo() {
 	const [imageUri, setImageUri] = useState<string | null>(null); // State for storing the selected image
 	const [permissionGranted, setPermissionGranted] = useState(false); // State for image picker permission
 	const [errors, setErrors] = useState<Record<string, string>>({});
+	const { onboardPatient } = usePatientService();
+	const mutation = useCustomMutation(onboardPatient);
+	const { onboardNewPatient } = usePatient(mutation);
 
 	const { patient, updateField } = useAddPatientStore();
 
@@ -54,7 +76,7 @@ export default function PatientStepTwo() {
 	);
 
 	const suggestionValues = ["Nuts", "Gluten"];
-	const radioOptions = [
+	const radioOptionsHerbalMed = [
 		{
 			id: YesOrNoCategory.Yes,
 			label: YesOrNoCategory.Yes,
@@ -65,13 +87,72 @@ export default function PatientStepTwo() {
 		},
 	];
 
-	const handleChangeCategory = (id: string) => {
-		setSelectedId(id);
+	const radioOptionsDailyExercise = [
+		{
+			id: YesOrNoCategory.Yes,
+			label: YesOrNoCategory.Yes,
+		},
+		{
+			id: YesOrNoCategory.No,
+			label: YesOrNoCategory.No,
+		},
+	];
+
+	const [selectedHerbalMed, setSelectedHerbalMed] = useState<string>("");
+	const [selectedDailyExercise, setSelectedDailyExercise] =
+		useState<string>("");
+
+	const handleHerbalMedChange = (id: string) => {
+		setSelectedHerbalMed(id);
+		if (id === "Yes") {
+			updateField("takenHerbalMedications", true); // Update correct field in your store
+		} else {
+			updateField("takenHerbalMedications", false); // Update correct field in your store
+		}
+		setErrors((prevErrors) => {
+			if (prevErrors.herbalMedication) {
+				const newErrors = { ...prevErrors };
+				delete newErrors.herbalMedication;
+				return newErrors;
+			}
+			return prevErrors;
+		});
+	};
+
+	const handleDailyExerciseChange = (id: string) => {
+		setSelectedDailyExercise(id);
+		if (id === "Yes") {
+			updateField("dailyExercise", true); // Update correct field in your store
+		} else {
+			updateField("dailyExercise", false); // Update correct field in your store
+		}
+		setErrors((prevErrors) => {
+			if (prevErrors.dailyExercise) {
+				const newErrors = { ...prevErrors };
+				delete newErrors.dailyExercise;
+				return newErrors;
+			}
+			return prevErrors;
+		});
 	};
 
 	const handlePress = () => {
-		setPatientProgress(0.6);
-		// router.push("");
+		const result = patientSchema.safeParse(patient);
+		if (!result.success) {
+			// Map errors to display
+			const fieldErrors: Record<string, string> = {};
+			for (const err of result.error.errors) {
+				if (err.path.length > 0) {
+					fieldErrors[err.path[0]] = err.message;
+				}
+			}
+			setErrors(fieldErrors);
+			return; // Stop progress
+		}
+
+		// Clear errors if valid
+		setErrors({});
+		onboardNewPatient(patient);
 	};
 
 	const handleImagePicker = async () => {
@@ -158,6 +239,30 @@ export default function PatientStepTwo() {
 							</ThemedText>
 						)}
 					</View>
+					<View>
+						<ThemedText style={styles.labelText}>
+							Lifestyle Conditions
+						</ThemedText>
+						<SelectList
+							setSelected={(val: any) => {
+								setSelected(val);
+								updateField("lifestyleConditions", val);
+							}}
+							data={lifeStyleConditionsData}
+							save="value"
+							boxStyles={styles.selectBox}
+							defaultOption={{
+								key: lifeStyleConditionsData[0].label,
+								value: lifeStyleConditionsData[0].value,
+							}}
+						/>
+						{errors.lifeStyleConditionsData && (
+							<ThemedText style={styles.errorText}>
+								{errors.lifeStyleConditionsData}
+							</ThemedText>
+						)}
+					</View>
+
 					{/* <CustomInputWithSuggesstion
 						label="Medical Condition"
 						placeholder="E.g Diabetes"
@@ -187,7 +292,7 @@ export default function PatientStepTwo() {
 						Have you taken any herbal medications?
 					</ThemedText>
 					<View style={styles.radioContainer}>
-						{radioOptions.map((option) => (
+						{radioOptionsHerbalMed.map((option) => (
 							<View
 								style={styles.radioOption}
 								key={option.id}
@@ -196,8 +301,31 @@ export default function PatientStepTwo() {
 									id={option.id}
 									containerStyle={styles.radioButtonContainer}
 									borderColor="#3A8289"
-									onPress={() => handleChangeCategory(option.id)}
-									selected={selectedId === option.id}
+									onPress={() => handleHerbalMedChange(option.id)}
+									selected={selectedHerbalMed === option.id}
+									color={Colors.primary.color}
+								/>
+								<ThemedText style={styles.radioLabel}>
+									{option.label}
+								</ThemedText>
+							</View>
+						))}
+					</View>
+				</View>
+				<View style={{ flexDirection: "column", gap: 8 }}>
+					<ThemedText style={styles.questionText}>Daily Exercise?</ThemedText>
+					<View style={styles.radioContainer}>
+						{radioOptionsDailyExercise.map((option) => (
+							<View
+								style={styles.radioOption}
+								key={option.id}
+							>
+								<RadioButton
+									id={option.id}
+									containerStyle={styles.radioButtonContainer}
+									borderColor="#3A8289"
+									onPress={() => handleDailyExerciseChange(option.id)}
+									selected={selectedDailyExercise === option.id}
 									color={Colors.primary.color}
 								/>
 								<ThemedText style={styles.radioLabel}>
@@ -209,7 +337,7 @@ export default function PatientStepTwo() {
 				</View>
 				{/* Upload Picture Section */}
 
-				<View style={styles.uploadSection}>
+				{/* <View style={styles.uploadSection}>
 					<ThemedText style={styles.uploadText}>
 						Upload Profile Picture
 					</ThemedText>
@@ -262,7 +390,7 @@ export default function PatientStepTwo() {
 							</View>
 						</Pressable>
 					)}
-				</View>
+				</View> */}
 			</View>
 
 			{/* The themed button placed at the bottom */}
@@ -276,6 +404,7 @@ export default function PatientStepTwo() {
 					textStyle={styles.buttonText}
 				/>
 			</View>
+			{mutation.isPending && <Loader />}
 		</SafeAreaView>
 	);
 }

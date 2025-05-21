@@ -1,20 +1,23 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { BaseToastProps } from "react-native-toast-message";
+import { View, Text, StyleSheet, Pressable } from "react-native";
+import Toast, { BaseToastProps } from "react-native-toast-message";
+import { X } from "lucide-react-native";
 
-interface CustomToastProps extends BaseToastProps {
+export interface CustomToastProps extends BaseToastProps {
 	text1?: string;
 	text2?: string;
+	cancelable?: boolean;
+	onCancel?: () => void; // 👈 optional cancel handler
 }
 
 const styles = StyleSheet.create({
 	container: {
 		flexDirection: "row",
 		alignItems: "center",
-		justifyContent: "flex-start",
+		justifyContent: "space-between",
 		width: "90%",
 		height: 52,
-		padding: 12,
+		paddingHorizontal: 12,
 		borderRadius: 8,
 	},
 	errorContainer: {
@@ -38,27 +41,58 @@ const styles = StyleSheet.create({
 		fontWeight: "600",
 	},
 	secondaryText: {
-		color: "white",
+		color: "#475467",
+		fontSize: 12,
+		marginTop: 2,
+	},
+	textContainer: {
+		flex: 1,
+	},
+	closeButton: {
+		marginLeft: 12,
+		padding: 4,
 	},
 });
 
 const toastConfig = {
-	error: ({ text1, text2 }: CustomToastProps) => (
+	error: ({ text1, text2, cancelable, onCancel }: CustomToastProps) => (
 		<View style={[styles.container, styles.errorContainer]}>
-			{text1 && <Text style={styles.errorText}>{text1}</Text>}
-			{text2 && <Text style={styles.secondaryText}>{text2}</Text>}
+			<View style={styles.textContainer}>
+				{text1 && <Text style={styles.errorText}>{text1}</Text>}
+				{text2 && <Text style={styles.secondaryText}>{text2}</Text>}
+			</View>
+			{cancelable && (
+				<Pressable
+					onPress={() => {
+						Toast.hide();
+						onCancel?.(); // 👈 call the passed function
+					}}
+					style={styles.closeButton}
+				>
+					<X
+						color="#D92D20"
+						size={16}
+					/>
+				</Pressable>
+			)}
 		</View>
 	),
+
 	success: ({ text1, text2 }: CustomToastProps) => (
 		<View style={[styles.container, styles.successContainer]}>
-			{text1 && <Text style={styles.successText}>{text1}</Text>}
-			{text2 && <Text style={styles.secondaryText}>{text2}</Text>}
+			<View style={styles.textContainer}>
+				{text1 && <Text style={styles.successText}>{text1}</Text>}
+				{text2 && <Text style={styles.secondaryText}>{text2}</Text>}
+			</View>
 		</View>
 	),
+
 	delete: ({ text1, text2 }: CustomToastProps) => (
 		<View style={[styles.container, styles.errorContainer]}>
-			{text1 && <Text style={styles.errorText}>{text1}</Text>}
-			{text2 && <Text style={styles.secondaryText}>{text2}</Text>}
+			<View style={styles.textContainer}>
+				{text1 && <Text style={styles.errorText}>{text1}</Text>}
+				{text2 && <Text style={styles.secondaryText}>{text2}</Text>}
+			</View>
 		</View>
 	),
 };
