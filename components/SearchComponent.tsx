@@ -7,7 +7,7 @@ import { MessageIcon, PhoneIcon } from "@/constants/icons";
 import { router } from "expo-router";
 
 interface SearchComponentProps {
-	data: { fullName: string }[]; // Array of items to search from
+	data: { fullName: string; id: string }[]; // Array of items to search from
 	onSearchResult?: (results: string[]) => void; // Callback to pass filtered results
 }
 
@@ -43,7 +43,7 @@ export const SearchComponent = ({
 				keyExtractor={(item, index) => index.toString()}
 				renderItem={({ item }) => (
 					<Pressable
-						onPress={() => router.push("/patient/2")}
+						onPress={() => router.push(`/patient/${item.id}`)}
 						style={styles.resultItem}
 					>
 						<View

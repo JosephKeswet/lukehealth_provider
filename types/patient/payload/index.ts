@@ -19,3 +19,8 @@ export type IPatient = {
 	takenHerbalMedications: boolean;
 	dailyExercise: boolean;
 };
+
+export interface ISearchPatient {
+	fullName: string;
+	email: string;
+}

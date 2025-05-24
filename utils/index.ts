@@ -8,8 +8,24 @@ export const formatDate = (date: Date) => {
 		month: "short", // Apr
 		day: "numeric", // 3
 	};
-	// return date.toLocaleDateString("en-US", options).toUpperCase();
+	return date.toLocaleDateString("en-US", options).toUpperCase();
 };
+
+export function formatIsoDateString(isoDateString: string): string {
+	const date = new Date(isoDateString);
+	if (isNaN(date.getTime())) {
+		return "Invalid Date"; // fallback for invalid dates
+	}
+
+	const options: Intl.DateTimeFormatOptions = {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	};
+
+	return date.toLocaleDateString(undefined, options);
+}
+
 // export const groupMessagesByDate = (messages: Message[]) => {
 // 	const groups: { [key: string]: Message[] } = {};
 

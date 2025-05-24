@@ -1,7 +1,9 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
+import { formatIsoDateString } from "@/utils";
+import { IPatientOverviewData } from "@/types/patient/responses";
 
 function ProfileItem({ title, mainText }: { title: string; mainText: string }) {
 	return (
@@ -12,53 +14,63 @@ function ProfileItem({ title, mainText }: { title: string; mainText: string }) {
 	);
 }
 
-export default function Overview() {
+export default function Overview({
+	data,
+}: {
+	data: IPatientOverviewData | null;
+}) {
+	if (!data || Object.keys(data).length === 0) {
+		return (
+			<View style={styles.fallbackContainer}>
+				<ThemedText style={styles.fallbackText}>
+					No overview data available.
+				</ThemedText>
+			</View>
+		);
+	}
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.profileDetails}>
 				<ProfileItem
 					title="Name"
-					mainText="Eddie Opara"
+					mainText={data?.fullName ?? "N/A"}
 				/>
 				<ProfileItem
 					title="Mobile"
-					mainText="08097359075"
+					mainText={data?.phone ?? "N/A"}
 				/>
 				<ProfileItem
 					title="Address"
-					mainText="1001 Lekki Street, Island way"
+					mainText={"N/A"}
+				/>
+				<ProfileItem
+					title="Age"
+					mainText={data?.age ? `${data.age} years` : "N/A"}
 				/>
 				<ProfileItem
 					title="Date Of Birth"
-					mainText="May 10, 1963"
+					mainText={
+						data?.dateOfBirth ? formatIsoDateString(data.dateOfBirth) : "N/A"
+					}
 				/>
 				<ProfileItem
 					title="Gender"
-					mainText="Male"
+					mainText="N/A"
 				/>
 				<View style={styles.profileItemContainer}>
 					<ThemedText style={styles.profileItemTitle}>
 						Care Plan Summary
 					</ThemedText>
-					<View
-						style={{
-							borderWidth: 1,
-							borderColor: Colors.light.border,
-							padding: 16,
-							borderRadius: 4,
-							backgroundColor: "white",
-							flexDirection: "row",
-							alignItems: "center",
-						}}
-					>
+					<View style={styles.carePlanBox}>
 						<ThemedText style={styles.profileItemMainText}>
-							Goals and Desired Outcomes: educe HbA1c levels by 1% in three
-							months(ST) & maintain blood pressure below 130/80 mm Hg (LT)
+							Goals and Desired Outcomes: reduce HbA1c levels by 1% in three
+							months (ST) & maintain blood pressure below 130/80 mm Hg (LT)
 						</ThemedText>
 					</View>
 				</View>
 				<ProfileItem
-					title="Emergecny Contact *"
+					title="Emergency Contact *"
 					mainText="07043187952"
 				/>
 			</View>
@@ -83,5 +95,24 @@ const styles = StyleSheet.create({
 	},
 	profileItemMainText: {
 		color: "#111111",
+	},
+	carePlanBox: {
+		borderWidth: 1,
+		borderColor: Colors.light.border,
+		padding: 16,
+		borderRadius: 4,
+		backgroundColor: "white",
+		flexDirection: "row",
+		alignItems: "center",
+	},
+	fallbackContainer: {
+		paddingBottom: 20,
+		height: "100%",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	fallbackText: {
+		color: "#999999",
+		fontSize: 16,
 	},
 });

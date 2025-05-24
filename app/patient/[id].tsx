@@ -10,20 +10,64 @@ import {
 	Text,
 	Image,
 	TouchableOpacity,
+	ScrollView,
+	RefreshControl,
 } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { MaterialIcons } from "@expo/vector-icons";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { useBottomSheet } from "@/hooks/useBottomSheet";
+import { useLocalSearchParams } from "expo-router";
+import { useCustomQuery } from "@/frameworks/useCustomQuery";
+import usePatientService from "@/services/usePatientService";
+import { apiRoutes } from "@/constants/api";
+import {
+	IPatientHealthData,
+	IPatientMedication,
+	IPatientOverviewData,
+} from "@/types/patient/responses";
+import Loader from "@/components/Loader";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Patient() {
 	const [index, setIndex] = React.useState(0);
+	const [refreshing, setRefreshing] = React.useState(false);
+	const { getPatientOverview, getPatientMedication, getPatientHealthData } =
+		usePatientService();
 	const [routes] = React.useState([
 		{ key: "first", title: "Overview" },
 		{ key: "second", title: "Medications" },
 		{ key: "third", title: "HealthData" },
 		{ key: "fourth", title: "Docs" },
 	]);
+	const { id } = useLocalSearchParams();
+	const { data: overviewData, isPending: isOverviewPending } = useCustomQuery({
+		queryFn: () => getPatientOverview({ patientId: id as string }),
+		queryKey: [apiRoutes.patients.get_patient_overview, id as string],
+	});
+
+	const { data: medicationData, isPending: isMedicationPending } =
+		useCustomQuery({
+			queryFn: () => getPatientMedication({ patientId: id as string }),
+			queryKey: [apiRoutes.patients.get_patient_medication, id as string],
+		});
+
+	const { data: healthData, isPending: isHealthPending } = useCustomQuery({
+		queryFn: () => getPatientHealthData({ patientId: id as string }),
+		queryKey: [apiRoutes.patients.get_patient_health_data, id as string],
+	});
+
+	const overview = overviewData?.data as IPatientOverviewData;
+	const medication = (medicationData?.data as IPatientMedication[]) ?? [];
+	const health = healthData?.data as IPatientHealthData;
+	console.log("overview", overview);
+	const tabLoadingState: { [key: number]: boolean } = {
+		0: isOverviewPending,
+		1: isMedicationPending,
+		2: isHealthPending,
+	};
+
+	const isCurrentTabLoading = tabLoadingState[index];
 
 	// Bottom sheet references and methods from useBottomSheet
 	const {
@@ -53,38 +97,87 @@ export default function Patient() {
 			<Text>Docs Tab Content</Text>
 		</View>
 	);
+	const queryClient = useQueryClient();
 
+	const onRefresh = async () => {
+		setRefreshing(true);
+		await Promise.all([
+			queryClient.invalidateQueries({
+				queryKey: [apiRoutes.patients.get_patient_overview, id],
+			}),
+			queryClient.invalidateQueries({
+				queryKey: [apiRoutes.patients.get_patient_medication, id],
+			}),
+			queryClient.invalidateQueries({
+				queryKey: [apiRoutes.patients.get_patient_health_data, id],
+			}),
+		]);
+		setRefreshing(false);
+	};
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-			{/* Profile Header */}
-			<View style={styles.profileHeader}>
-				<Image
-					source={{ uri: "https://via.placeholder.com/100" }} // Replace with the actual profile image URL
-					style={styles.profileImage}
-				/>
-				<View style={styles.profileInfo}>
-					<Text style={styles.profileName}>John Doe</Text>
-					<Text style={styles.profileDetails}>tienlapspktnd@gmail.com</Text>
+			<ScrollView
+				style={{ flex: 1 }}
+				refreshControl={
+					<RefreshControl
+						refreshing={refreshing}
+						onRefresh={onRefresh}
+					/>
+				}
+				contentContainerStyle={{ flexGrow: 1 }}
+			>
+				{/* Profile Header */}
+				<View style={styles.profileHeader}>
+					<Image
+						source={{ uri: "https://via.placeholder.com/100" }}
+						style={styles.profileImage}
+					/>
+					<View style={styles.profileInfo}>
+						<Text style={styles.profileName}>
+							{overview?.fullName ?? "N/A"}
+						</Text>
+						<Text style={styles.profileDetails}>
+							{overview?.email ?? "N/A"}
+						</Text>
+					</View>
+					<TouchableOpacity onPress={openMenuSheet}>
+						<MaterialIcons
+							name="more-vert"
+							size={24}
+							color={Colors.primary.black}
+						/>
+					</TouchableOpacity>
 				</View>
 
-				{/* Ellipsis Icon */}
-				<TouchableOpacity onPress={openMenuSheet}>
-					<MaterialIcons
-						name="more-vert"
-						size={24}
-						color={Colors.primary.black}
-					/>
-				</TouchableOpacity>
-			</View>
+				{/* TabView */}
+				<TabView
+					navigationState={{ index, routes }}
+					renderScene={SceneMap({
+						first: () =>
+							isOverviewPending ? <Loader /> : <Overview data={overview} />,
+						second: () =>
+							isMedicationPending ? (
+								<Loader />
+							) : (
+								<Medications data={medication} />
+							),
+						third: () =>
+							isHealthPending ? <Loader /> : <HealthData data={health} />,
+						fourth: Docs,
+					})}
+					onIndexChange={setIndex}
+					initialLayout={{ width: 100 }}
+					renderTabBar={renderTabBar}
+					style={styles.tabView}
+				/>
+			</ScrollView>
 
-			{/* RBSheet for the menu */}
+			{/* RBSheet remains outside ScrollView */}
 			<RBSheet
 				ref={menuSheetRef}
 				height={150}
 				openDuration={250}
-				customStyles={{
-					container: styles.bottomSheetContainer,
-				}}
+				customStyles={{ container: styles.bottomSheetContainer }}
 			>
 				<View style={styles.menuContainer}>
 					<TouchableOpacity
@@ -101,21 +194,6 @@ export default function Patient() {
 					</TouchableOpacity>
 				</View>
 			</RBSheet>
-
-			{/* TabView */}
-			<TabView
-				navigationState={{ index, routes }}
-				renderScene={SceneMap({
-					first: Overview,
-					second: Medications,
-					third: HealthData,
-					fourth: Docs,
-				})}
-				onIndexChange={setIndex}
-				initialLayout={{ width: 100 }}
-				renderTabBar={renderTabBar}
-				style={styles.tabView}
-			/>
 		</SafeAreaView>
 	);
 }

@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
+import { IPatientHealthData } from "@/types/patient/responses";
 
 function ProfileItem({ title, mainText }: { title: string; mainText: string }) {
 	return (
@@ -12,46 +13,43 @@ function ProfileItem({ title, mainText }: { title: string; mainText: string }) {
 	);
 }
 
-export default function HealthData() {
+export default function HealthData({
+	data,
+}: {
+	data: IPatientHealthData | null;
+}) {
+	if (!data) {
+		return (
+			<View style={styles.fallbackContainer}>
+				<ThemedText style={styles.fallbackText}>
+					No health data available.
+				</ThemedText>
+			</View>
+		);
+	}
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.profileDetails}>
 				<ProfileItem
 					title="Blood group"
-					mainText="AB+"
+					mainText={data?.bloodGroup ?? "N/A"}
 				/>
 				<ProfileItem
 					title="Genotype"
-					mainText="AA"
+					mainText={data?.genoType ?? "N/A"}
 				/>
 				<ProfileItem
 					title="Weight"
-					mainText="54kg"
+					mainText={data?.weight ? `${data.weight} kg` : "N/A"}
 				/>
-				<View style={styles.profileItemContainer}>
-					<ThemedText style={styles.profileItemTitle}>
-						Family Medical History
-					</ThemedText>
-					<View
-						style={{
-							borderWidth: 1,
-							borderColor: Colors.light.border,
-							padding: 16,
-							borderRadius: 4,
-							backgroundColor: "white",
-							flexDirection: "row",
-							alignItems: "center",
-						}}
-					>
-						<ThemedText style={styles.profileItemMainText}>
-							Join our community and connect with us on Whatsapp for quick
-							responses
-						</ThemedText>
-					</View>
-				</View>
 				<ProfileItem
-					title="Emergecny Contact *"
-					mainText="07043187952"
+					title="Medical Condition"
+					mainText={data?.medicalCondition ?? "N/A"}
+				/>
+				<ProfileItem
+					title="Emergency Contact *"
+					mainText="N/A"
 				/>
 			</View>
 		</View>
@@ -62,6 +60,16 @@ const styles = StyleSheet.create({
 	container: {
 		paddingHorizontal: 20,
 		paddingTop: 20,
+	},
+	fallbackContainer: {
+		paddingBottom: 20,
+		height: "100%",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	fallbackText: {
+		color: "#999999",
+		fontSize: 16,
 	},
 	profileDetails: {
 		flexDirection: "column",

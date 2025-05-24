@@ -49,6 +49,10 @@ export const apiRoutes = {
 	patients: {
 		get_provider_patients: "/provider/patient/get-patients",
 		onboard_patient: "/provider/patient/onboard",
+		get_patient_overview: "/provider/patient/overview",
+		get_patient_medication: "/provider/patient/medication",
+		get_patient_health_data: "/provider/patient/health-data",
+		search_patient: "/provider/patient/search",
 	},
 	notes: {
 		create: "/notes/provider/create",

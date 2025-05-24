@@ -5,56 +5,67 @@ import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { doseDetails } from "@/constants/enums";
 import { CheckMark } from "@/constants/icons";
+import { IPatientMedication } from "@/types/patient/responses";
 
-export default function Medications() {
+export default function Medications({ data }: { data: IPatientMedication[] }) {
+	const hasMedications = Array.isArray(data) && data.length > 0;
+
 	return (
-		<View
-			style={{
-				paddingHorizontal: 20,
-			}}
-		>
-			{Object.entries(doseDetails).map(([key, details]) => (
-				<Card key={key}>
-					<View style={styles.header}>
-						<ThemedText style={styles.issuedText}>ISSUED: 7TH JULY</ThemedText>
-						<Tag
-							style={styles.incompleteTag}
-							textStyle={styles.incompleteTagText}
-						>
-							Completed 🥳
-						</Tag>
-					</View>
-					<View>
-						<ThemedText style={styles.title}>{key}</ThemedText>
-						<View style={styles.statusRow}>
-							<ThemedText style={styles.label}>Status:</ThemedText>
+		<View style={{ paddingHorizontal: 20 }}>
+			{!hasMedications ? (
+				<View
+					style={{
+						paddingBottom: 20,
+						height: "100%",
+						alignItems: "center",
+						justifyContent: "center",
+					}}
+				>
+					<ThemedText style={{ color: "#999", fontSize: 20 }}>
+						No medications found.
+					</ThemedText>
+				</View>
+			) : (
+				data.map((item, index) => (
+					<Card key={index}>
+						<View style={styles.header}>
+							<ThemedText style={styles.issuedText}>
+								ISSUED: {item.issueDate}
+							</ThemedText>
 							<Tag
-								style={styles.modifiedTag}
-								textStyle={styles.modifiedTagText}
+								style={styles.incompleteTag}
+								textStyle={styles.incompleteTagText}
 							>
-								Modified
+								Completed 🥳
 							</Tag>
 						</View>
-						<Divider />
-					</View>
-					<View style={styles.dosageSection}>
-						<View style={styles.doseRow}>
-							<ThemedText style={styles.label}>Dose 6/6</ThemedText>
-							<VerticalDivider />
-							<View style={styles.circleRow}>
-								<View style={styles.circle}>
-									<CheckMark />
+						<View>
+							<ThemedText style={styles.title}>{index}</ThemedText>
+							<View style={styles.statusRow}>
+								<ThemedText style={styles.label}>Status:</ThemedText>
+								<Tag
+									style={styles.modifiedTag}
+									textStyle={styles.modifiedTagText}
+								>
+									Modified
+								</Tag>
+							</View>
+							<Divider />
+						</View>
+						<View style={styles.dosageSection}>
+							<View style={styles.doseRow}>
+								<ThemedText style={styles.label}>Dose 6/6</ThemedText>
+								<VerticalDivider />
+								<View style={styles.circleRow}>
+									<View style={styles.circle}>
+										<CheckMark />
+									</View>
 								</View>
 							</View>
 						</View>
-					</View>
-					{/* <Divider /> */}
-					{/* <View style={styles.footer}>
-						<ThemedText>View Notes</ThemedText>
-						<ArrowRightIcon />
-					</View> */}
-				</Card>
-			))}
+					</Card>
+				))
+			)}
 		</View>
 	);
 }
