@@ -166,13 +166,13 @@ export default function RootLayout() {
 						}}
 					/>
 					<Stack.Screen
-						name={routes.note_create}
+						name={routes.confirm_note}
 						options={{
-							title: "Notes",
+							title: "Create",
 							headerStyle: {
 								backgroundColor: "white",
 							},
-							headerTitle: "Notes",
+							headerTitle: "Create",
 							headerTitleStyle: {
 								fontSize: 16,
 								fontWeight: "400",

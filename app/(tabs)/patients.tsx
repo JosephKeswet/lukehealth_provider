@@ -9,14 +9,6 @@ import { useCustomQuery } from "@/frameworks/useCustomQuery";
 // import { FloatingActionButton } from "@/components/FloatingActionButton";
 
 export default function PatientScreen() {
-	const items = [
-		"Kate Tanner",
-		"Rick Wright",
-		"Sarah Landlin",
-		"Devon Miles",
-		"Sandra Thompson",
-	];
-
 	const handleSearchResult = (results: string[]) => {
 		console.log("Filtered Results:", results);
 	};
@@ -38,7 +30,6 @@ export default function PatientScreen() {
 		queryFn: getPatients,
 		queryKey: [apiRoutes.patients.get_provider_patients],
 	});
-	console.log(data);
 
 	return (
 		<View

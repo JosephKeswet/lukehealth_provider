@@ -74,5 +74,32 @@ export default function usePatient(mutationAdapter: MutationAdapter<any, any>) {
 		);
 	};
 
-	return { onboardNewPatient };
+	const addNewPatient = async (args: { userId: string }) => {
+		Alert.alert(
+			"Add patient",
+			"Are you sure you want to onboard this patient?",
+			[
+				{
+					text: "Cancel",
+					style: "cancel",
+				},
+				{
+					text: "Confirm",
+					onPress: async () => {
+						const response = await mutationAdapter.mutate(args);
+						console.log(response);
+						if (response.state === ResponseState.Success) {
+							handleAddPatientSuccess(response);
+						} else {
+							handleAddPatientFailed(response);
+						}
+					},
+					style: "destructive",
+				},
+			],
+			{ cancelable: true }
+		);
+	};
+
+	return { onboardNewPatient, addNewPatient };
 }

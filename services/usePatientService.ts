@@ -77,6 +77,26 @@ export default function usePatientService() {
 			throw error;
 		}
 	};
+	const addPatient = async (payload: { userId: string }): Promise<any> => {
+		try {
+			const { data } = await axiosAuth.post(
+				`${process.env.EXPO_PUBLIC_API_URL}${apiVersion}${apiRoutes.patients.add_patient}`,
+				payload
+			);
+
+			return data;
+		} catch (error: any) {
+			if (axios.isAxiosError(error)) {
+				const axiosError = error;
+				if (axiosError.response) {
+					const errorMessage = axiosError?.response?.data?.message;
+					return axiosError?.response?.data;
+				}
+			}
+			console.error("Error:", error.message);
+			throw error;
+		}
+	};
 
 	const getPatientOverview = async (payload: {
 		patientId: string;
@@ -156,5 +176,6 @@ export default function usePatientService() {
 		getPatientMedication,
 		getPatientHealthData,
 		searchPatient,
+		addPatient,
 	};
 }

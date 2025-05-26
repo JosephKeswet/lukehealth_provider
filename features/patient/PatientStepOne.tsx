@@ -1,4 +1,5 @@
 import {
+	ActivityIndicator,
 	Dimensions,
 	SafeAreaView,
 	ScrollView,
@@ -26,6 +27,9 @@ import { z } from "zod";
 import usePatientService from "@/services/usePatientService";
 import { useCustomQuery } from "@/frameworks/useCustomQuery";
 import { apiRoutes } from "@/constants/api";
+import { useCustomMutation } from "@/frameworks/useCustomMutation";
+import usePatient from "@/hooks/mutations/usePatient";
+import Loader from "@/components/Loader";
 
 // Define the Zod schema for validation
 const patientSchema = z.object({
@@ -66,13 +70,16 @@ export default function PatientStepOne() {
 	const [selectedId, setSelectedId] = useState<string>("");
 	const [selected, setSelected] = useState("Nigeria");
 	const { patient, updateField } = useAddPatientStore();
-	const { searchPatient } = usePatientService();
-	const { data } = useCustomQuery({
+	const { searchPatient, addPatient } = usePatientService();
+	const { data, isPending: isSearchingPatient } = useCustomQuery({
 		queryFn: () =>
 			searchPatient({ fullName: patient.fullName, email: patient.email }),
 		queryKey: [apiRoutes.patients.search_patient, patient.firstName],
 		enabled: patient.fullName.length > 0 && patient.email.length > 0, // Only run when both are available
 	});
+
+	const mutation = useCustomMutation(addPatient);
+	const { addNewPatient } = usePatient(mutation);
 
 	const searchedPatient = data?.data ?? undefined;
 	const setPatientProgress = useHealthStore(
@@ -152,7 +159,6 @@ export default function PatientStepOne() {
 			label: GenderCategory.Female,
 		},
 	];
-	console.log(patient);
 
 	return (
 		<SafeAreaView style={[styles.safeAreaView, { height }]}>
@@ -192,92 +198,104 @@ export default function PatientStepOne() {
 							onChangeText={(text) => handleInputChange("email", text)}
 							error={errors.email}
 						/>
-						<View
-							style={{
-								padding: 20,
-								borderColor: "#F5F5F5",
-								borderWidth: 1,
-								borderRadius: 8,
-							}}
-						>
+
+						{isSearchingPatient ? (
 							<View
 								style={{
-									flexDirection: "row",
+									padding: 20,
+									justifyContent: "center",
+									alignItems: "center",
+									borderColor: "#F5F5F5",
+									borderWidth: 1,
+									borderRadius: 8,
 								}}
 							>
-								<View>
-									<ThemedText
-										style={{
-											fontSize: 16,
-											color: "#717171",
-											fontWeight: "500",
-										}}
-									>
-										{searchedPatient?.fullName}
-									</ThemedText>
-									<View
-										style={{
-											flexDirection: "row",
-											gap: 20,
-										}}
-									>
+								<Loader size="small" />
+							</View>
+						) : searchedPatient ? (
+							<View
+								style={{
+									padding: 20,
+									borderColor: "#F5F5F5",
+									borderWidth: 1,
+									borderRadius: 8,
+								}}
+							>
+								{/* Existing content rendering searchedPatient */}
+								<View style={{ flexDirection: "row" }}>
+									<View>
 										<ThemedText
 											style={{
-												fontSize: 11,
-												color: "#808080",
+												fontSize: 16,
+												color: "#717171",
 												fontWeight: "500",
 											}}
 										>
-											{searchedPatient?.email}
+											{searchedPatient.fullName}
 										</ThemedText>
-										<View
-											style={{
-												alignItems: "center",
-												justifyContent: "center",
-												height: 20,
-												width: 50,
-												backgroundColor: "#ECFCE5",
-												borderRadius: 32,
-											}}
-										>
+										<View style={{ flexDirection: "row", gap: 20 }}>
 											<ThemedText
 												style={{
-													fontSize: 9,
-													color: "#198155",
-													fontWeight: "400",
+													fontSize: 11,
+													color: "#808080",
+													fontWeight: "500",
 												}}
 											>
-												Active
+												{searchedPatient.email}
 											</ThemedText>
+											<View
+												style={{
+													alignItems: "center",
+													justifyContent: "center",
+													height: 20,
+													width: 50,
+													backgroundColor: "#ECFCE5",
+													borderRadius: 32,
+												}}
+											>
+												<ThemedText
+													style={{
+														fontSize: 9,
+														color: "#198155",
+														fontWeight: "400",
+													}}
+												>
+													Active
+												</ThemedText>
+											</View>
 										</View>
 									</View>
 								</View>
-							</View>
-							<View
-								style={{
-									justifyContent: "center",
-									alignItems: "center",
-									width: "100%",
-								}}
-							>
-								<ThemedButton
-									title="Add Patient"
-									onPress={() => {}}
-									lightColor="#3A8289"
-									darkColor="#1A4F55"
+
+								<View
 									style={{
-										width: 125,
-										height: 44,
-										borderRadius: 32,
-										marginTop: 20,
+										justifyContent: "center",
+										alignItems: "center",
+										width: "100%",
 									}}
-									textStyle={{
-										fontSize: 14,
-										fontWeight: "500",
-									}}
-								/>
+								>
+									<ThemedButton
+										title="Add Patient"
+										onPress={() =>
+											addNewPatient({ userId: searchedPatient.id })
+										}
+										lightColor="#3A8289"
+										darkColor="#1A4F55"
+										style={{
+											width: 125,
+											height: 44,
+											borderRadius: 32,
+											marginTop: 20,
+										}}
+										textStyle={{
+											fontSize: 14,
+											fontWeight: "500",
+										}}
+									/>
+								</View>
 							</View>
-						</View>
+						) : null}
+
 						<ThemedInput
 							label="Medical Condition"
 							placeholder=""

@@ -2,12 +2,13 @@ import { apiRoutes, apiVersion } from "@/constants/api";
 import useAxiosAuth from "@/hooks/useAxiosAuth";
 import { IVerifyEmail } from "@/types/auth/payload";
 import { IVerifyEmailResponse } from "@/types/auth/responses";
+import { ICreateNote } from "@/types/notes/payload";
 
 import axios from "axios";
 
 export default function useNoteService() {
 	const axiosAuth = useAxiosAuth();
-	const createNote = async (payload: IVerifyEmail): Promise<any> => {
+	const createNote = async (payload: ICreateNote): Promise<any> => {
 		try {
 			const { data } = await axiosAuth.post(
 				`${apiVersion}${apiRoutes.notes.create}`,

@@ -5,15 +5,74 @@ import { router, useLocalSearchParams } from "expo-router";
 import { View, StyleSheet, SafeAreaView, TextInput } from "react-native";
 import { useState } from "react";
 import { Image } from "expo-image";
+import useNoteService from "@/services/useNoteService";
+import { useCustomMutation } from "@/frameworks/useCustomMutation";
+import useNote from "@/hooks/mutations/useNote";
+import { useNoteStore } from "@/store/useNoteStore";
+import Loader from "@/components/Loader";
+import { useCustomQuery } from "@/frameworks/useCustomQuery";
+import usePatientService from "@/services/usePatientService";
+import { apiRoutes } from "@/constants/api";
 
 export default function CreateNoteScreen() {
 	const { id } = useLocalSearchParams();
-	const [note, setNote] = useState("");
+	const { noteDetails, setNote, resetNote } = useNoteStore();
+	// Setup mutation and store update hooks
+	const { createNote } = useNoteService();
+	const { getPatientOverview } = usePatientService();
+
+	const mutation = useCustomMutation(createNote);
+	const { addNote } = useNote(mutation);
+	const { data: overviewData, isPending: isOverviewPending } = useCustomQuery({
+		queryFn: () =>
+			getPatientOverview({ patientId: noteDetails.patientId as string }),
+		queryKey: [apiRoutes.patients.get_patient_overview, id as string],
+	});
+
+	const handleSaveNote = async () => {
+		// if (!id) return;
+
+		try {
+			// Call the mutation to create note
+
+			// Update the local store with the new note
+			addNote({
+				note: noteDetails.note,
+				patientId: noteDetails.patientId as string,
+				title: noteDetails.title,
+				collaboratorIds: noteDetails.collaborators.map((collab) => collab.id),
+			});
+
+			// Navigate back to notes list
+		} catch (error) {
+			console.error("Failed to save note:", error);
+			// Optionally show some UI error feedback here
+		}
+	};
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
 			<View style={styles.container}>
-				<View style={styles.headerRow}>
+				<View style={styles.avatarContainer}>
+					<View style={styles.nameBadge}>
+						<ThemedText style={styles.nameBadgeText}>
+							From: Pharm. Edna
+						</ThemedText>
+					</View>
+
+					<View style={styles.collaboratorsRow}>
+						{noteDetails.collaborators.map((collab) => (
+							<ThemedText
+								key={collab.id}
+								style={styles.collaboratorName}
+							>
+								{collab.fullName}
+							</ThemedText>
+						))}
+					</View>
+				</View>
+
+				{/* <View style={styles.headerRow}>
 					<View style={styles.avatarContainer}>
 						<View style={styles.nameBadge}>
 							<ThemedText style={styles.nameBadgeText}>
@@ -28,21 +87,21 @@ export default function CreateNoteScreen() {
 						/>
 					</View>
 					<ThemedText style={styles.date}>Dec 25, 2024</ThemedText>
-				</View>
+				</View> */}
 				<ThemedText style={styles.title}>
-					Add Note for Prescription ID: {id}
+					Add Note for : {overviewData?.data?.fullName}
 				</ThemedText>
 				<TextInput
 					style={styles.textInput}
 					placeholder="Type your note here..."
 					multiline
-					value={note}
+					value={noteDetails.note}
 					onChangeText={setNote}
 				/>
 				<View style={styles.buttonRow}>
-					<ThemedButton
+					{/* <ThemedButton
 						title="Cancel"
-						onPress={() => setNote("")}
+						onPress={() => resetNote()}
 						style={{
 							width: "45%",
 							borderRadius: 32,
@@ -55,15 +114,12 @@ export default function CreateNoteScreen() {
 							fontWeight: "500",
 							fontSize: 14,
 						}}
-					/>
+					/> */}
 					<ThemedButton
 						title="Save Note"
-						onPress={() => {
-							console.log("Note saved:", note);
-							router.push("/(tabs)/notes");
-						}}
+						onPress={handleSaveNote}
 						style={{
-							width: "45%",
+							width: "100%",
 							borderRadius: 32,
 						}}
 						textStyle={{
@@ -73,7 +129,7 @@ export default function CreateNoteScreen() {
 					/>
 				</View>
 			</View>
-			{/* <FloatingActionButton /> */}
+			{mutation.isPending && <Loader />}
 		</SafeAreaView>
 	);
 }
@@ -96,6 +152,9 @@ const styles = StyleSheet.create({
 	avatarContainer: {
 		position: "relative",
 		width: 125,
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 8,
 	},
 	nameBadge: {
 		backgroundColor: "#DDE9E6",
@@ -132,8 +191,6 @@ const styles = StyleSheet.create({
 	},
 	textInput: {
 		flex: 1,
-		// borderWidth: 1,
-		// borderColor: "#ccc",
 		borderRadius: 8,
 		padding: 10,
 		fontSize: 14,
@@ -145,5 +202,20 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		gap: 16,
 		marginTop: 20,
+	},
+	collaboratorsRow: {
+		backgroundColor: "#E8E8E8",
+		width: 111,
+		height: 26,
+		borderRadius: 16,
+		justifyContent: "center",
+		alignItems: "center",
+		zIndex: 1,
+	},
+
+	collaboratorName: {
+		fontSize: 10,
+		fontWeight: "500",
+		color: "#255A4E",
 	},
 });
