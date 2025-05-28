@@ -17,4 +17,5 @@ export const routes = {
 	create_note: "create-note",
 	confirm_note: "confirm-note", // dynamic route must be prefixed with the [id] parameter
 	add_patient: "add-patient",
+	add_medication: "add-medication",
 } as const;

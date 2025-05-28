@@ -30,6 +30,7 @@ export const Colors = {
 		black: "#111111",
 		hightLightGreen: "#E5F6EF",
 		green: "#008039",
+		grey: "#666666",
 	},
 	error: {
 		red: "red",

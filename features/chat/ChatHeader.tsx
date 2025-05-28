@@ -10,7 +10,7 @@ interface VoiceCallItemProps {
 	// onCallPress: () => void;
 }
 
-export const ChatHeader: React.FC<VoiceCallItemProps> = ({ name }) => {
+const ChatHeader: React.FC<VoiceCallItemProps> = ({ name }) => {
 	return (
 		<>
 			<View style={styles.container}>

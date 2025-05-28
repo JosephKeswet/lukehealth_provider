@@ -14,7 +14,6 @@ import { Colors } from "@/constants/Colors";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { router } from "expo-router";
 import { GenderCategory } from "@/constants/enums";
-import useHealthStore from "@/store";
 import { ThemedInput } from "@/components/ThemedInput";
 import { SelectList } from "react-native-dropdown-select-list";
 import { useAddPatientStore } from "@/store/usAddPatientStore";
@@ -30,6 +29,7 @@ import { apiRoutes } from "@/constants/api";
 import { useCustomMutation } from "@/frameworks/useCustomMutation";
 import usePatient from "@/hooks/mutations/usePatient";
 import Loader from "@/components/Loader";
+import usePatientStore from "@/store/usePatientStore";
 
 // Define the Zod schema for validation
 const patientSchema = z.object({
@@ -82,7 +82,7 @@ export default function PatientStepOne() {
 	const { addNewPatient } = usePatient(mutation);
 
 	const searchedPatient = data?.data ?? undefined;
-	const setPatientProgress = useHealthStore(
+	const setPatientProgress = usePatientStore(
 		(state) => state.setPatientProgress
 	);
 	const [errors, setErrors] = useState<Record<string, string>>({});

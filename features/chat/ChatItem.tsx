@@ -5,16 +5,18 @@ import { ThemedText } from "@/components/ThemedText";
 
 interface VoiceCallItemProps {
 	name: string;
-	onCallPress: () => void;
+	recipientId: string;
+	onChatPress: (recipientId: string) => void;
 }
 
-export const ChatItem: React.FC<VoiceCallItemProps> = ({
+const ChatItem: React.FC<VoiceCallItemProps> = ({
 	name,
-	onCallPress,
+	recipientId,
+	onChatPress,
 }) => {
 	return (
 		<Pressable
-			onPress={onCallPress}
+			onPress={() => onChatPress(recipientId)}
 			style={styles.container}
 		>
 			<View style={styles.profileCircle} />
@@ -39,7 +41,7 @@ export const ChatItem: React.FC<VoiceCallItemProps> = ({
 				<View style={styles.callContainer}>
 					<ThemedText
 						style={styles.callText}
-						onPress={onCallPress}
+						onPress={() => onChatPress(recipientId)}
 					>
 						Click here to start messaging!
 					</ThemedText>

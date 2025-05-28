@@ -159,7 +159,10 @@ export default function Patient() {
 							isMedicationPending ? (
 								<Loader />
 							) : (
-								<Medications data={medication} />
+								<Medications
+									data={medication}
+									id={id as string}
+								/>
 							),
 						third: () =>
 							isHealthPending ? <Loader /> : <HealthData data={health} />,

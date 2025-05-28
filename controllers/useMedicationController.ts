@@ -1,45 +1,36 @@
-import { queryKeys } from "@/constants/queryKeys";
 import { useCustomMutation } from "@/frameworks/useCustomMutation";
-import { useCustomQuery } from "@/frameworks/useCustomQuery";
 import usePrescription from "@/hooks/mutations/usePrescription";
-import useUser from "@/hooks/mutations/useUser";
 import useMedicationService from "@/services/useMedicationService";
-import useUserService from "@/services/useUserService";
-import useHealthStore from "@/store";
+import useAddMedicationStore from "@/store/useAddMedication";
 import { IAddMedication, medicationSchema } from "@/types/health/payload";
-
-import {
-	IUpdatePersonalInfo,
-	updatePersonalInfoSchema,
-} from "@/types/user/payload";
-import { formatDateOfBirth, formatDateToDMY } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import React from "react";
 import { useForm } from "react-hook-form";
 
 export default function useMedicationController() {
 	const { addMedication } = useMedicationService();
 	const mutation = useCustomMutation(addMedication);
 	const { addPrescriptionDetails } = usePrescription(mutation);
-	const addMedicationProgress = useHealthStore(
-		(state) => state.addMedicationProgress
-	);
-	const setAddMedicationProgress = useHealthStore(
-		(state) => state.setAddMedicationProgress
-	);
+	const { patientId } = useAddMedicationStore();
 
-	const handleNextStep = () => {
-		if (addMedicationProgress < 1) {
-			setAddMedicationProgress(addMedicationProgress + 0.5);
-		}
-	};
+	// Get persisted data
+	const medicationFormData = useAddMedicationStore(
+		(state) => state.medicationFormData
+	);
+	const setMedicationFormData = useAddMedicationStore(
+		(state) => state.setMedicationFormData
+	);
 
 	const {
 		control,
 		handleSubmit,
 		formState: { errors },
+		trigger,
+		watch,
 	} = useForm<IAddMedication>({
 		resolver: zodResolver(medicationSchema),
 		defaultValues: {
+			userId: "",
 			additionalDetails: "",
 			brandName: "",
 			administrationRoute: "",
@@ -50,11 +41,32 @@ export default function useMedicationController() {
 			startDate: "",
 			prescriptionUrl: "",
 			doseWeightUnit: "",
+			medicationTimes: [""],
+			dose: 0,
+
+			// override with persisted data if any
+			...medicationFormData,
 		},
+		mode: "onChange",
+		shouldUnregister: false,
 	});
 
+	// Persist form data on each change
+	React.useEffect(() => {
+		const subscription = watch((value) => {
+			setMedicationFormData({
+				...value,
+				medicationTimes:
+					value.medicationTimes?.filter((time): time is string => !!time) || [],
+			});
+		});
+		return () => subscription.unsubscribe();
+	}, [watch, setMedicationFormData]);
+
+	// onSubmit remains same, calls addPrescriptionDetails etc
 	function onSubmit(data: IAddMedication) {
 		const dose = data.dose?.toString() + " " + data.doseWeightUnit;
+
 		addPrescriptionDetails({
 			additionalDetails: data.additionalDetails!,
 			brandName: data.brandName,
@@ -66,14 +78,16 @@ export default function useMedicationController() {
 			frequencyOfUsage: data.frequencyOfUsage,
 			startDate: new Date(data.startDate).toISOString().split("T")[0], // Ensures YYYY-MM-DD
 			prescriptionUrl: data.prescriptionUrl,
+			medicationTimes: data.medicationTimes,
+			userId: patientId,
 		});
 	}
-
 	return {
 		control,
 		handleSubmit,
 		errors,
 		onSubmit,
 		mutation,
+		trigger,
 	};
 }

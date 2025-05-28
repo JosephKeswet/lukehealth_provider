@@ -18,6 +18,7 @@ export const healthInfoSchema = z.object({
 });
 
 export interface IAddMedication {
+	userId: string;
 	brandName: string;
 	dose: any;
 	frequencyOfUsage: "once-daily" | "twice-daily" | "thrice-daily" | "as-needed"; // Adjust if needed
@@ -26,20 +27,24 @@ export interface IAddMedication {
 	diagnosis: string;
 	startDate: string; // ISO date format (YYYY-MM-DD)
 	endDate: string; // ISO date format (YYYY-MM-DD)
-	prescriptionUrl: string;
+	prescriptionUrl?: string;
 	additionalDetails?: string; // Optional field
 	doseWeightUnit?: string; // Adjust if needed
+	medicationTimes?: string[];
 }
 
 export const medicationSchema = z.object({
+	userId: z.string(),
 	brandName: z.string().min(1, { message: "Brand name is required" }),
 	dose: z.string().min(1, { message: "Dose is required" }),
-	doseWeightUnit: z
-		.string()
-		.min(1, { message: "Dose must be a valid weight unit" }),
-	frequencyOfUsage: z
-		.string()
-		.min(1, { message: "Frequency of usage is required" }), // Adjust enums if needed
+	doseWeightUnit: z.string().optional(),
+	frequencyOfUsage: z.enum([
+		"once-daily",
+		"twice-daily",
+		"thrice-daily",
+		"as-needed",
+	]),
+
 	administrationRoute: z
 		.string()
 		.min(1, { message: "Administration route is required" }),
@@ -51,6 +56,9 @@ export const medicationSchema = z.object({
 	endDate: z.string().min(1, { message: "End date is required" }),
 	prescriptionUrl: z.string().optional(),
 	additionalDetails: z.string().optional(),
+	medicationTimes: z
+		.array(z.string().min(1, { message: "Medication time is required" }))
+		.optional(),
 });
 
 export interface IUpdateHealthInfo {

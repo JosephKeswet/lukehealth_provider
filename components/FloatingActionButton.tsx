@@ -5,11 +5,12 @@ import {
 	TouchableOpacity,
 	View,
 } from "react-native";
-import React from "react";
+import React, { JSX } from "react";
 import {
 	CloseSheetIcon,
 	NoteIcon,
 	PatientIcon,
+	PillIcon,
 	PlusIcon,
 	PrescriptionIcon,
 	ProfileIcon,
@@ -93,6 +94,24 @@ export default function FloatingActionButton() {
 						}}
 						subText="Pick a time that’s convinient for you to get care."
 					/>
+
+<CallToActionItem
+				headerText="Add New Medication"
+				subText="Hang on and get a call from one of our doctors in 5-10 minutes."
+				icon={
+					<PillIcon
+						width="32"
+						height="32"
+					/>
+				}
+				onPress={() => {
+					closeBottomSheet();
+					setTimeout(() => {
+						router.push("/add-medication");
+					}, 200);
+				}}
+			/>
+					
 				</View>
 			</RBSheet>
 		</View>

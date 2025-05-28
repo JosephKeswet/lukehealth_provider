@@ -6,25 +6,31 @@ import { Colors } from "@/constants/Colors";
 import { doseDetails } from "@/constants/enums";
 import { CheckMark } from "@/constants/icons";
 import { IPatientMedication } from "@/types/patient/responses";
+import EmptyMedicationState from "../medication/EmptyMedicationState";
+import { router } from "expo-router";
+import useAddMedicationStore from "@/store/useAddMedication";
 
-export default function Medications({ data }: { data: IPatientMedication[] }) {
+export default function Medications({
+	data,
+	id,
+}: {
+	data: IPatientMedication[];
+	id: string;
+}) {
 	const hasMedications = Array.isArray(data) && data.length > 0;
+	const { setPatientId } = useAddMedicationStore();
 
 	return (
-		<View style={{ paddingHorizontal: 20 }}>
+		<View style={{ paddingHorizontal: 20, height: "100%" }}>
 			{!hasMedications ? (
-				<View
-					style={{
-						paddingBottom: 20,
-						height: "100%",
-						alignItems: "center",
-						justifyContent: "center",
+				<EmptyMedicationState
+					buttonText="Add Medication"
+					text="Patient has no medications. Click the button below to add a prescription"
+					onPress={() => {
+						setPatientId(id);
+						router.push("/add-medication");
 					}}
-				>
-					<ThemedText style={{ color: "#999", fontSize: 20 }}>
-						No medications found.
-					</ThemedText>
-				</View>
+				/>
 			) : (
 				data.map((item, index) => (
 					<Card key={index}>

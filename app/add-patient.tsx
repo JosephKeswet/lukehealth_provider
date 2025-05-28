@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import usePatientStore from "@/store";
 import PatientStepOne from "@/features/patient/PatientStepOne";
 import PatientStepTwo from "@/features/patient/PatientStepTwo";
+import usePatientStore from "@/store/usePatientStore";
 export default function PatientInfoScreen() {
 	const patientProgress = usePatientStore((state) => state.patientProgress);
 

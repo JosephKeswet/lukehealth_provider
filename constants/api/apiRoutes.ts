@@ -17,7 +17,7 @@ export const apiRoutes = {
 		updateHealthInfo: "/user/update-health-info",
 	},
 	medication: {
-		add1: "/medication/add-medication",
+		add1: "/provider/patient/add-medication",
 		getMedications: "/medication",
 		mark_compliance: "/medication/mark-compliance",
 		get_completed_medication: "/medication/completed",
@@ -41,7 +41,7 @@ export const apiRoutes = {
 		add_expo_token: "/user/add-expo-token",
 	},
 	chat: {
-		getChatHistories: "/chat/histories",
+		getChatHistories: "/chat/provider/histories",
 		getChatMessages: "/chat/history",
 		joinRoom: "/chat/join-room",
 		sendChat: "/chat/send-chat",

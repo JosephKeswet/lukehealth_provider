@@ -43,7 +43,7 @@ export default function usePrescription(
 		queryClient.invalidateQueries({
 			queryKey: [apiRoutes.medication.getMedications],
 		});
-		router.push("/(tabs)/medications");
+		router.push("/patients");
 	};
 	const addPrescriptionOne = async (args: IAddMedication) => {
 		const response = await mutationAdapter.mutate(args);

@@ -1,7 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { CloseSheetIcon, PillIcon, PrescriptionIcon } from "@/constants/icons";
-import { router } from "expo-router";
+import { CloseSheetIcon } from "@/constants/icons";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedButton } from "@/components/ThemedButton";
 import { Colors } from "@/constants/Colors";

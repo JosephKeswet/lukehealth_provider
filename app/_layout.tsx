@@ -15,12 +15,13 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { routes } from "@/constants/routing";
 import { Pressable } from "react-native";
 import { ArrowBackIcon } from "@/constants/icons";
-import usePatientStore from "@/store";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 import toastConfig from "@/libs/toastConfig";
+import usePatientStore from "@/store/usePatientStore";
+import useHealthStore from "@/store/useHealthStore";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -30,10 +31,18 @@ export default function RootLayout() {
 	const queryClient = new QueryClient({
 		defaultOptions: { queries: { retry: 2 } },
 	});
+	const addMedicationProgress = useHealthStore(
+		(state) => state.addMedicationProgress
+	);
+
+	const setAddMedicationProgress = useHealthStore(
+		(state) => state.setAddMedicationProgress
+	);
 
 	const setPatientProgress = usePatientStore(
 		(state) => state.setPatientProgress
 	);
+
 	const colorScheme = useColorScheme();
 	const [loaded] = useFonts({
 		SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -250,6 +259,42 @@ export default function RootLayout() {
 								>
 									<ArrowBackIcon />
 									<ThemedText>New Patient</ThemedText>
+								</Pressable>
+							),
+						}}
+					/>
+
+					<Stack.Screen
+						name={routes.add_medication}
+						options={{
+							headerTitle: "", // Hide default header title
+							// headerBackTitle: "Health Information",
+							headerShadowVisible: false,
+							headerBackTitleStyle: {
+								fontSize: 14,
+							},
+							headerTintColor: "#282828",
+							headerRight: () => (
+								<Progress.Bar
+									progress={addMedicationProgress}
+									width={135}
+									height={2}
+									color={Colors.primary.color}
+								/>
+							),
+							headerLeft: () => (
+								<Pressable
+									onPress={() => {
+										if (addMedicationProgress > 0) {
+											setAddMedicationProgress(addMedicationProgress - 0.5);
+										} else {
+											router.back();
+										}
+									}}
+									style={{ flexDirection: "row", gap: 4 }}
+								>
+									<ArrowBackIcon />
+									<ThemedText>Add New Medication</ThemedText>
 								</Pressable>
 							),
 						}}

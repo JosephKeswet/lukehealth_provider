@@ -13,14 +13,12 @@ import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { YesOrNoCategory } from "@/constants/enums";
-import useHealthStore from "@/store";
 import { ThemedInput } from "@/components/ThemedInput";
 import { SelectList } from "react-native-dropdown-select-list";
 import { CloseIcon, UploadFileIcon } from "@/constants/icons";
 // import CustomInputWithSuggesstion from "../components/CustomInputWithSuggesstion";
 import * as ImagePicker from "expo-image-picker"; // For image selection
 import { router } from "expo-router";
-import usePatientStore from "@/store";
 import CustomInputWithSuggesstion from "@/components/CustomInputWithSuggestion";
 import { z } from "zod";
 import { useAddPatientStore } from "@/store/usAddPatientStore";
@@ -33,6 +31,7 @@ import { useCustomMutation } from "@/frameworks/useCustomMutation";
 import usePatientService from "@/services/usePatientService";
 import usePatient from "@/hooks/mutations/usePatient";
 import Loader from "@/components/Loader";
+import usePatientStore from "@/store/usePatientStore";
 
 // Define the Zod schema for validation
 const patientSchema = z.object({
